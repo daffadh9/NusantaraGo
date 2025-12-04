@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .status {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+        .success { background: #10b981; color: white; }
+        .error { background: #ef4444; color: white; }
+        .info { background: #3b82f6; color: white; }
+        pre {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Supabase Connection Test</h1>
+    
+    <div class="status info">
+        <h3>Test Configuration</h3>
+        <p>This page will test your Supabase connection and auth setup.</p>
+    </div>
+
+    <div id="results"></div>
+
+    <div>
+        <button onclick="testConnection()">1. Test Connection</button>
+        <button onclick="testAuth()">2. Test Auth State</button>
+        <button onclick="testGoogleLogin()">3. Test Google Login</button>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+        
+        // READ FROM YOUR .env.local FILE AND PASTE HERE FOR TESTING:
+        const SUPABASE_URL = 'PASTE_YOUR_VITE_SUPABASE_URL_HERE'
+        const SUPABASE_ANON_KEY = 'PASTE_YOUR_VITE_SUPABASE_ANON_KEY_HERE'
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        
+        window.supabase = supabase
+        
+        const results = document.getElementById('results')
+        
+        function showResult(title, status, message, data = null) {
+            const div = document.createElement('div')
+            div.className = `status ${status}`
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <p>${message}</p>
+                ${data ? `<pre>${JSON.stringify(data, null, 2)}</pre>` : ''}
+            `
+            results.appendChild(div)
+        }
+        
+        window.testConnection = async function() {
+            results.innerHTML = ''
+            showResult('Testing...', 'info', 'Checking Supabase connection...')
+            
+            try {
+                // Test if we can connect
+                const { data, error } = await supabase.auth.getSession()
+                
+                if (error) {
+                    showResult('❌ Connection Failed', 'error', error.message, error)
+                } else {
+                    showResult('✅ Connection OK', 'success', 'Successfully connected to Supabase!', {
+                        url: SUPABASE_URL,
+                        hasSession: !!data.session
+                    })
+                }
+            } catch (err) {
+                showResult('❌ Error', 'error', err.message, err)
+            }
+        }
+        
+        window.testAuth = async function() {
+            results.innerHTML = ''
+            showResult('Testing...', 'info', 'Checking auth state...')
+            
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession()
+                
+                if (error) {
+                    showResult('❌ Auth Error', 'error', error.message, error)
+                } else if (session) {
+                    showResult('✅ User Logged In', 'success', 'Session found!', {
+                        email: session.user.email,
+                        provider: session.user.app_metadata.provider,
+                        expires: new Date(session.expires_at * 1000).toLocaleString()
+                    })
+                } else {
+                    showResult('ℹ️ No Session', 'info', 'User is not logged in.')
+                }
+            } catch (err) {
+                showResult('❌ Error', 'error', err.message, err)
+            }
+        }
+        
+        window.testGoogleLogin = async function() {
+            results.innerHTML = ''
+            showResult('Testing...', 'info', 'Initiating Google OAuth...')
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin,
+                    }
+                })
+                
+                if (error) {
+                    showResult('❌ OAuth Error', 'error', error.message, error)
+                } else {
+                    showResult('🔄 Redirecting...', 'success', 'Redirecting to Google...', data)
+                }
+            } catch (err) {
+                showResult('❌ Error', 'error', err.message, err)
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            if (SUPABASE_URL.includes('PASTE')) {
+                showResult('⚠️ Configuration Required', 'error', 
+                    'Please edit this file and paste your SUPABASE_URL and SUPABASE_ANON_KEY from .env.local file.')
+            } else {
+                testConnection()
+            }
+        })
+    </script>
+</body>
+</html>

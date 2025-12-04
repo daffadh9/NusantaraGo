@@ -1,0 +1,255 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  MapPin, Share2, Users, Shield, Phone, AlertTriangle,
+  Navigation, Clock, Battery, Signal, Eye, EyeOff,
+  UserPlus, Copy, Check, Bell, Loader2, Compass
+} from 'lucide-react';
+
+interface TripShare {
+  id: string;
+  tripName: string;
+  destination: string;
+  startDate: string;
+  endDate: string;
+  shareCode: string;
+  isLive: boolean;
+  currentLocation?: { lat: number; lng: number; address: string; };
+  lastUpdate?: string;
+  viewers: { id: string; name: string; avatar: string; }[];
+  sosEnabled: boolean;
+  batteryLevel: number;
+}
+
+interface EmergencyContact {
+  id: string;
+  name: string;
+  phone: string;
+  relation: string;
+}
+
+const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
+  const [activeTrip, setActiveTrip] = useState<TripShare | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
+  const [showSOS, setShowSOS] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<'share' | 'contacts' | 'history'>('share');
+  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([
+    { id: '1', name: 'Mama', phone: '+62812345678', relation: 'Ibu' },
+    { id: '2', name: 'Ayah', phone: '+62812345679', relation: 'Ayah' }
+  ]);
+
+  const [tripForm, setTripForm] = useState({
+    tripName: '',
+    destination: '',
+    startDate: '',
+    endDate: ''
+  });
+
+  const startSharing = () => {
+    const newTrip: TripShare = {
+      id: Date.now().toString(),
+      ...tripForm,
+      shareCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+      isLive: true,
+      currentLocation: { lat: -6.2088, lng: 106.8456, address: 'Jakarta, Indonesia' },
+      lastUpdate: new Date().toLocaleTimeString(),
+      viewers: [],
+      sosEnabled: true,
+      batteryLevel: 85
+    };
+    setActiveTrip(newTrip);
+    setIsSharing(true);
+  };
+
+  const copyShareCode = () => {
+    if (activeTrip) {
+      navigator.clipboard.writeText(`https://nusantarago.id/track/${activeTrip.shareCode}`);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const triggerSOS = () => {
+    setShowSOS(true);
+    // In real app: Send SMS/notification to emergency contacts
+    alert('🚨 SOS Alert terkirim ke kontak darurat!');
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto pb-20 animate-in fade-in">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center">
+          <Share2 size={24} className="text-white" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Live Trip Sharing</h1>
+          <p className="text-slate-500 dark:text-slate-400">Share lokasi real-time dengan keluarga 📍</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
+        {[
+          { id: 'share', label: 'Share Trip', icon: <Navigation size={18} /> },
+          { id: 'contacts', label: 'Emergency', icon: <Phone size={18} /> },
+          { id: 'history', label: 'History', icon: <Clock size={18} /> }
+        ].map(tab => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id as any)}
+            className={`flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+              activeTab === tab.id ? 'bg-white dark:bg-slate-700 text-blue-600 shadow' : 'text-slate-500'
+            }`}>
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'share' && (
+        <>
+          {!isSharing ? (
+            /* Start New Share */
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-lg">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Mulai Share Trip</h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nama Trip</label>
+                  <input type="text" placeholder="Liburan ke Bali"
+                    value={tripForm.tripName} onChange={e => setTripForm({...tripForm, tripName: e.target.value})}
+                    className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Destinasi</label>
+                  <input type="text" placeholder="Bali, Indonesia"
+                    value={tripForm.destination} onChange={e => setTripForm({...tripForm, destination: e.target.value})}
+                    className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Mulai</label>
+                    <input type="date" value={tripForm.startDate} 
+                      onChange={e => setTripForm({...tripForm, startDate: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Selesai</label>
+                    <input type="date" value={tripForm.endDate}
+                      onChange={e => setTripForm({...tripForm, endDate: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0" />
+                  </div>
+                </div>
+              </div>
+
+              <button onClick={startSharing}
+                className="w-full mt-6 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-2xl font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                <Navigation size={20} /> Mulai Share Lokasi
+              </button>
+            </div>
+          ) : (
+            /* Active Sharing */
+            <div className="space-y-4">
+              {/* Live Status */}
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-6 text-white">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 bg-white rounded-full animate-pulse" />
+                    <span className="font-bold">LIVE</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Battery size={16} /> {activeTrip?.batteryLevel}%
+                    <Signal size={16} /> Strong
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-1">{activeTrip?.tripName}</h3>
+                <div className="flex items-center gap-2 text-sm opacity-90">
+                  <MapPin size={14} /> {activeTrip?.currentLocation?.address}
+                </div>
+                <p className="text-xs mt-2 opacity-75">Update terakhir: {activeTrip?.lastUpdate}</p>
+              </div>
+
+              {/* Share Code */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-4">
+                <label className="block text-sm font-medium text-slate-500 mb-2">Share Link</label>
+                <div className="flex items-center gap-2">
+                  <input type="text" readOnly value={`nusantarago.id/track/${activeTrip?.shareCode}`}
+                    className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl text-sm" />
+                  <button onClick={copyShareCode}
+                    className={`p-3 rounded-xl transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-600'}`}>
+                    {copied ? <Check size={20} /> : <Copy size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Viewers */}
+              <div className="bg-white dark:bg-slate-800 rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    <Eye size={16} className="inline mr-2" />
+                    {activeTrip?.viewers.length || 0} orang memantau
+                  </span>
+                  <button className="text-blue-500 text-sm font-semibold">+ Invite</button>
+                </div>
+              </div>
+
+              {/* SOS Button */}
+              <button onClick={triggerSOS}
+                className="w-full py-4 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-bold flex items-center justify-center gap-2 shadow-lg">
+                <AlertTriangle size={24} /> 🆘 EMERGENCY SOS
+              </button>
+
+              {/* Stop Sharing */}
+              <button onClick={() => setIsSharing(false)}
+                className="w-full py-3 border-2 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 rounded-2xl font-semibold">
+                Stop Sharing
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {activeTab === 'contacts' && (
+        <div className="space-y-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-4">
+            <h3 className="font-bold text-slate-900 dark:text-white mb-4">Kontak Darurat</h3>
+            <div className="space-y-3">
+              {emergencyContacts.map(contact => (
+                <div key={contact.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-xl">
+                  <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                    <Phone size={18} className="text-red-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-900 dark:text-white">{contact.name}</p>
+                    <p className="text-sm text-slate-500">{contact.phone} • {contact.relation}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="w-full mt-4 py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 font-semibold flex items-center justify-center gap-2">
+              <UserPlus size={18} /> Tambah Kontak
+            </button>
+          </div>
+
+          {/* Safety Tips */}
+          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4">
+            <h4 className="font-bold text-amber-700 dark:text-amber-400 mb-2">💡 Tips Keselamatan</h4>
+            <ul className="text-sm text-amber-600 dark:text-amber-500 space-y-1">
+              <li>• Share lokasi ke minimal 2 orang terpercaya</li>
+              <li>• Pastikan baterai HP selalu terisi</li>
+              <li>• Simpan nomor darurat lokal (110, 119)</li>
+              <li>• Aktifkan SOS di HP kamu</li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'history' && (
+        <div className="text-center py-12">
+          <Clock size={48} className="mx-auto text-slate-300 mb-4" />
+          <p className="text-slate-500">Belum ada riwayat sharing</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LiveTripSharing;
