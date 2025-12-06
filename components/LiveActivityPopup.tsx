@@ -3,11 +3,13 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, User, ArrowRight } from 'lucide-react';
 
 const MOCK_ACTIVITIES = [
-  { text: "Budi dari Jakarta baru saja booking Open Trip ke Bromo 🌋", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Budi" },
-  { text: "Siti dari Bandung redeem voucher Hotel Bali 🏨", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Siti" },
-  { text: "Raka baru saja menyelesaikan Quest di Borobudur 📸", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Raka" },
-  { text: "Ayu dari Surabaya membuka Jastip Pie Susu 🥧", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Ayu" },
-  { text: "Dimas baru saja generate itinerary ke Raja Ampat 🏝️", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Dimas" },
+  { name: "Budi", location: "Jakarta", activity: "booking Open Trip ke Bromo", emoji: "🌋", time: "2 menit lalu" },
+  { name: "Siti", location: "Bandung", activity: "redeem voucher Hotel Bali", emoji: "🏨", time: "5 menit lalu" },
+  { name: "Raka", location: "Yogyakarta", activity: "menyelesaikan Quest di Borobudur", emoji: "📸", time: "8 menit lalu" },
+  { name: "Ayu", location: "Surabaya", activity: "membuka Jastip Pie Susu", emoji: "🥧", time: "12 menit lalu" },
+  { name: "Dimas", location: "Semarang", activity: "generate itinerary ke Raja Ampat", emoji: "🏝️", time: "15 menit lalu" },
+  { name: "Putri", location: "Malang", activity: "booking tiket ke Labuan Bajo", emoji: "✈️", time: "18 menit lalu" },
+  { name: "Andi", location: "Medan", activity: "join komunitas Backpacker", emoji: "🎒", time: "20 menit lalu" },
 ];
 
 const LiveActivityPopup: React.FC = () => {
@@ -38,15 +40,21 @@ const LiveActivityPopup: React.FC = () => {
 
   return (
     <div className="fixed bottom-6 left-6 z-50 animate-in slide-in-from-bottom-4 fade-in duration-500">
-      <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border border-emerald-100 dark:border-emerald-900/50 p-3 pr-5 rounded-2xl shadow-xl shadow-emerald-900/10 flex items-center gap-3 max-w-sm">
-        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900 overflow-hidden border-2 border-white dark:border-slate-700 flex-shrink-0">
-          <img src={currentActivity.avatar} alt="User" className="w-full h-full object-cover" />
-        </div>
-        <div>
-          <p className="text-xs font-bold text-slate-800 dark:text-white leading-tight">
-            {currentActivity.text}
-          </p>
-          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">Baru saja</p>
+      <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-emerald-200 dark:border-emerald-800/50 p-4 rounded-2xl shadow-xl shadow-emerald-900/10 max-w-xs">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl flex-shrink-0">{currentActivity.emoji}</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+              {currentActivity.name}
+            </p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+              dari {currentActivity.location} • {currentActivity.activity}
+            </p>
+            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1.5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+              {currentActivity.time}
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -591,7 +591,11 @@ const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Keep TripPlanner mounted to prevent unmount error, use CSS to hide */}
           <div className={activeView === 'planner' ? 'block' : 'hidden'}>
-            <TripPlanner onGenerate={handleGenerate} isLoading={isLoading} />
+            <TripPlanner 
+              onGenerate={handleGenerate} 
+              isLoading={isLoading} 
+              userId={user.id}
+            />
           </div>
           {activeView === 'trip_ready' && <TripReady />}
           {activeView === 'ai_tools' && <AIToolsHub />} 

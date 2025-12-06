@@ -22,7 +22,9 @@ const IndonesiaMapGlowing: React.FC<IndonesiaMapGlowingProps> = ({
   userAvatar 
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isAnimating, setIsAnimating] = useState(true);
+  const [hoveredCity, setHoveredCity] = useState<{name: string, x: number, y: number} | null>(null);
 
   // Major cities/points with coordinates (scaled for canvas)
   const points = [
@@ -302,8 +304,39 @@ const IndonesiaMapGlowing: React.FC<IndonesiaMapGlowingProps> = ({
 
   const greeting = getGreeting();
 
+  // Handle mouse move for city tooltips
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const scaleX = rect.width / 520;
+    const scaleY = rect.height / 220;
+    
+    // Check if mouse is near any city point
+    let foundCity = null;
+    for (const point of points) {
+      const cityX = point.x * scaleX;
+      const cityY = point.y * scaleY;
+      const distance = Math.sqrt(Math.pow(mouseX - cityX, 2) + Math.pow(mouseY - cityY, 2));
+      
+      if (distance < 20) {
+        foundCity = { name: point.name, x: cityX, y: cityY };
+        break;
+      }
+    }
+    
+    setHoveredCity(foundCity);
+  };
+
   return (
-    <div className="relative w-full h-[400px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden">
+    <div 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setHoveredCity(null)}
+      className="relative w-full h-[400px] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl overflow-hidden cursor-crosshair">
       {/* Floating Icons - Like reference image */}
       <div className="absolute top-4 right-8 z-20 animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }}>
         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/30">
@@ -363,8 +396,8 @@ const IndonesiaMapGlowing: React.FC<IndonesiaMapGlowingProps> = ({
             <h2 className="text-white text-3xl font-black tracking-tight">
               Halo, {userName}! 👋
             </h2>
-            <p className="text-slate-400 text-sm mt-1">
-              Mau jelajah kemana hari ini?
+            <p className="text-slate-400 text-sm mt-1 max-w-xs">
+              Dunia terlalu luas cuma di-scroll dari layar. Udah siap jadi petualang bar-bar? 🔥
             </p>
           </div>
         </div>
@@ -400,6 +433,28 @@ const IndonesiaMapGlowing: React.FC<IndonesiaMapGlowingProps> = ({
       {/* Decorative corner elements */}
       <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-transparent"></div>
       <div className="absolute bottom-0 right-0 w-48 h-48 bg-gradient-to-tl from-teal-500/10 to-transparent"></div>
+      
+      {/* City Tooltip on Hover */}
+      {hoveredCity && (
+        <div 
+          className="absolute z-30 pointer-events-none animate-in fade-in zoom-in-95 duration-150"
+          style={{ 
+            left: hoveredCity.x, 
+            top: hoveredCity.y - 50,
+            transform: 'translateX(-50%)'
+          }}
+        >
+          <div className="bg-slate-900/95 backdrop-blur-sm border border-emerald-500/50 rounded-xl px-4 py-2 shadow-xl shadow-emerald-500/20">
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-emerald-400" />
+              <span className="text-white font-bold text-sm">{hoveredCity.name}</span>
+            </div>
+            <p className="text-slate-400 text-xs mt-0.5">Klik untuk explore</p>
+          </div>
+          {/* Arrow */}
+          <div className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 bg-slate-900/95 border-r border-b border-emerald-500/50 rotate-45"></div>
+        </div>
+      )}
     </div>
   );
 };

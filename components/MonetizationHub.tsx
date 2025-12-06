@@ -68,10 +68,14 @@ const MOCK_SERVICES: MonetizationService[] = [
 ];
 
 const MOCK_REWARDS: RewardItem[] = [
-  { id: 'r1', title: 'Voucher Hotel Rp 100rb', cost: 1000, type: 'Voucher', image: 'https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=400' },
-  { id: 'r2', title: 'NusantaraGo T-Shirt', cost: 2500, type: 'Merch', image: 'https://images.pexels.com/photos/5710135/pexels-photo-5710135.jpeg?auto=compress&cs=tinysrgb&w=400' },
-  { id: 'r3', title: 'Saldo Wallet Rp 50rb', cost: 500, type: 'Cash', image: 'https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=400' },
-  { id: 'r4', title: 'Gratis 1x Open Trip', cost: 5000, type: 'Trip', image: 'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=400' },
+  { id: 'r1', title: 'Voucher Hotel Rp 100rb', cost: 1000, type: 'Voucher', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400' },
+  { id: 'r2', title: 'NusantaraGo T-Shirt', cost: 2500, type: 'Merch', image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400' },
+  { id: 'r3', title: 'Saldo Wallet Rp 50rb', cost: 500, type: 'Cash', image: 'https://images.unsplash.com/photo-1554672408-730436b60dde?w=400' },
+  { id: 'r4', title: 'Gratis 1x Open Trip Bali', cost: 5000, type: 'Trip', image: getAccurateDestinationImage('Bali', 'Pantai') },
+  { id: 'r5', title: 'Diskon 50% Tiket Pesawat', cost: 3000, type: 'Voucher', image: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400' },
+  { id: 'r6', title: 'Free Snorkeling Gear Rental', cost: 800, type: 'Trip', image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400' },
+  { id: 'r7', title: 'Voucher Makan Rp 75rb', cost: 750, type: 'Voucher', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400' },
+  { id: 'r8', title: 'Premium 1 Bulan Gratis', cost: 2000, type: 'Voucher', image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400' },
 ];
 
 const MonetizationHub: React.FC = () => {

@@ -1,11 +1,14 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { BudgetLevel, TravelerType, UserInput } from '../types';
-import { MapPin, Calendar, Wallet, Users, Heart, Loader2, Sparkles } from 'lucide-react';
+import { MapPin, Calendar, Wallet, Users, Heart, Loader2, Sparkles, Crown, AlertCircle } from 'lucide-react';
+import UsageIndicator from './UsageIndicator';
 
 interface TripPlannerProps {
   onGenerate: (data: UserInput) => void;
   isLoading: boolean;
+  userId?: string;
+  onUpgradeClick?: () => void;
 }
 
 const INTEREST_OPTIONS = [
@@ -14,7 +17,7 @@ const INTEREST_OPTIONS = [
   "Petualangan Ekstrem", "Seni & Kerajinan"
 ];
 
-const TripPlanner: React.FC<TripPlannerProps> = ({ onGenerate, isLoading }) => {
+const TripPlanner: React.FC<TripPlannerProps> = ({ onGenerate, isLoading, userId, onUpgradeClick }) => {
   const [formData, setFormData] = useState<UserInput>({
     destination: '',
     duration: 3,
@@ -59,10 +62,23 @@ const TripPlanner: React.FC<TripPlannerProps> = ({ onGenerate, isLoading }) => {
   return (
     <div className="w-full max-w-3xl mx-auto bg-white dark:bg-dark-card rounded-3xl shadow-sm border border-slate-200 dark:border-dark-border p-6 md:p-8 animate-in fade-in slide-in-from-bottom-4 transition-colors duration-300">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-          <Sparkles className="text-emerald-500" /> Buat Trip Baru
-        </h2>
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Isi preferensi liburanmu, AI kami akan merancang semuanya.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <Sparkles className="text-emerald-500" /> Buat Trip Baru
+            </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Isi preferensi liburanmu, AI kami akan merancang semuanya.</p>
+          </div>
+          
+          {/* Usage Indicator */}
+          {userId && (
+            <UsageIndicator 
+              userId={userId} 
+              onUpgradeClick={onUpgradeClick}
+              compact={false}
+            />
+          )}
+        </div>
       </div>
 
       <div className="space-y-8">

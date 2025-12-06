@@ -39,23 +39,38 @@ const NusantaraLingo: React.FC<NusantaraLingoProps> = ({ destination }) => {
     setPlayingIndex(index);
     
     try {
-      // Generate speech using Gemini TTS
-      const base64Audio = await generateSpeech(`Say this slowly: ${text}`);
-      if (base64Audio) {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({sampleRate: 24000});
-        const audioBuffer = await decodeAudioData(
-            decode(base64Audio),
-            audioContext,
-            24000,
-            1
-        );
-        const source = audioContext.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioContext.destination);
-        source.onended = () => setPlayingIndex(null);
-        source.start();
+      // Use Web Speech API for instant pronunciation (much faster than Gemini TTS)
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID'; // Indonesian
+        utterance.rate = 0.8; // Slower for learning
+        utterance.pitch = 1;
+        
+        utterance.onend = () => setPlayingIndex(null);
+        utterance.onerror = () => setPlayingIndex(null);
+        
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
       } else {
-        setPlayingIndex(null);
+        // Fallback to Gemini TTS if Web Speech not available
+        const base64Audio = await generateSpeech(`Say this slowly: ${text}`);
+        if (base64Audio) {
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({sampleRate: 24000});
+          const audioBuffer = await decodeAudioData(
+              decode(base64Audio),
+              audioContext,
+              24000,
+              1
+          );
+          const source = audioContext.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(audioContext.destination);
+          source.onended = () => setPlayingIndex(null);
+          source.start();
+        } else {
+          setPlayingIndex(null);
+        }
       }
     } catch (e) {
       console.error(e);

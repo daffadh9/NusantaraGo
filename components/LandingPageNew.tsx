@@ -278,10 +278,8 @@ const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             {/* Social Proof Quick Stats */}
             <div className="flex flex-wrap justify-center gap-6 md:gap-8 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-400">
               <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  <img src="https://i.pravatar.cc/40?img=1" alt="User" className="w-8 h-8 rounded-full border-2 border-white" />
-                  <img src="https://i.pravatar.cc/40?img=2" alt="User" className="w-8 h-8 rounded-full border-2 border-white" />
-                  <img src="https://i.pravatar.cc/40?img=3" alt="User" className="w-8 h-8 rounded-full border-2 border-white" />
+                <div className={`w-10 h-10 rounded-full ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'} flex items-center justify-center`}>
+                  <Users size={20} className="text-emerald-500" />
                 </div>
                 <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                   <strong className={isDark ? 'text-white' : 'text-slate-900'}>10,000+</strong> travelers
@@ -299,19 +297,20 @@ const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </div>
             </div>
             
-            {/* Scroll Down Indicator */}
-            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-              <button
-                onClick={() => {
-                  document.getElementById('why-superapp')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className={`flex flex-col items-center gap-2 ${isDark ? 'text-slate-400 hover:text-emerald-400' : 'text-slate-500 hover:text-emerald-600'} transition-colors`}
-              >
-                <span className="text-xs font-semibold uppercase tracking-wider">Scroll untuk lanjut</span>
-                <ChevronRight size={24} className="rotate-90" />
-              </button>
             </div>
-          </div>
+        </div>
+        
+        {/* Scroll Down Indicator - Positioned outside content container */}
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center animate-bounce z-20">
+          <button
+            onClick={() => {
+              document.getElementById('why-superapp')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className={`flex flex-col items-center gap-2 px-6 py-3 rounded-full ${isDark ? 'bg-slate-800/80 text-slate-300 hover:text-emerald-400 hover:bg-slate-700/80' : 'bg-white/80 text-slate-600 hover:text-emerald-600 hover:bg-white'} backdrop-blur-sm transition-all shadow-lg`}
+          >
+            <span className="text-xs font-bold uppercase tracking-wider">Scroll untuk lanjut</span>
+            <ChevronRight size={20} className="rotate-90" />
+          </button>
         </div>
       </section>
 
@@ -965,13 +964,15 @@ const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted }) => {
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { name: 'Rian Pratama', role: 'Backpacker Jakarta', avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop', rating: 5, review: 'Gila sih ini app! Planning trip ke Bromo cuma 20 detik, semua detail udah lengkap banget. Hidden gems-nya on point!' },
-              { name: 'Sarah Wijaya', role: 'Family Traveler', avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop', rating: 5, review: 'Pertama kali ke Bali sama keluarga, takut ribet. NusantaraGo bikin semua gampang! Mas Budi AI-nya helpful banget 🙏' },
-              { name: 'Budi Santoso', role: 'Solo Traveler', avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop', rating: 5, review: 'Budget hemat, tempat asik, ga kena tourist trap. Ini yang gw cari selama ini! Mantap jiwa!' },
+              { name: 'Rian P.', role: 'Backpacker Jakarta', initial: 'R', color: 'from-blue-500 to-cyan-500', rating: 5, review: 'Gila sih ini app! Planning trip ke Bromo cuma 20 detik, semua detail udah lengkap banget. Hidden gems-nya on point!' },
+              { name: 'Sarah W.', role: 'Family Traveler', initial: 'S', color: 'from-pink-500 to-rose-500', rating: 5, review: 'Pertama kali ke Bali sama keluarga, takut ribet. NusantaraGo bikin semua gampang! Mas Budi AI-nya helpful banget 🙏' },
+              { name: 'Budi S.', role: 'Solo Traveler', initial: 'B', color: 'from-emerald-500 to-teal-500', rating: 5, review: 'Budget hemat, tempat asik, ga kena tourist trap. Ini yang gw cari selama ini! Mantap jiwa!' },
             ].map((review, idx) => (
               <div key={idx} className={`p-6 rounded-3xl ${isDark ? 'bg-slate-950 border border-slate-800' : 'bg-white border border-slate-200'}`}>
                 <div className="flex items-center gap-4 mb-4">
-                  <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full" />
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${review.color} flex items-center justify-center text-white font-bold text-lg`}>
+                    {review.initial}
+                  </div>
                   <div>
                     <h4 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.name}</h4>
                     <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{review.role}</p>

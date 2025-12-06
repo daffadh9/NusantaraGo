@@ -511,6 +511,41 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, userInput, onReset,
         </button>
       </div>
 
+      {/* Destination Photo Gallery Carousel */}
+      <div className="mb-8 bg-white dark:bg-dark-card rounded-2xl p-4 border border-slate-200 dark:border-dark-border shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
+            <Camera size={18} className="text-emerald-500" /> Galeri Destinasi
+          </h3>
+          <span className="text-xs text-slate-500">Geser untuk lihat lebih banyak →</span>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide">
+          {/* Generate destination images based on trip title */}
+          {[
+            { name: trip_summary.title, query: trip_summary.title.toLowerCase().replace(/trip to |eksplorasi |wisata /gi, '') },
+            ...itinerary.flatMap(day => day.activities.slice(0, 2).map(a => ({ name: a.place_name, query: a.place_name })))
+          ].slice(0, 8).map((dest, idx) => (
+            <div 
+              key={idx} 
+              className="flex-shrink-0 w-48 snap-start group cursor-pointer"
+            >
+              <div className="relative h-32 rounded-xl overflow-hidden mb-2">
+                <img 
+                  src={`https://source.unsplash.com/400x300/?${encodeURIComponent(dest.query)},indonesia,travel`}
+                  alt={dest.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                  <span className="text-white text-xs font-bold">{dest.name}</span>
+                </div>
+              </div>
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{dest.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Column: Itinerary */}
@@ -770,15 +805,54 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, userInput, onReset,
               </div>
             </div>
 
-            <div className="space-y-3 mb-6">
-              <button className="w-full flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all font-bold text-slate-700 dark:text-slate-300">
-                <span>GoPay</span>
-                <div className="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
-              </button>
-              <button className="w-full flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-emerald-500 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all font-bold text-slate-700 dark:text-slate-300">
-                <span>BCA Virtual Account</span>
-                <div className="w-4 h-4 rounded-full border border-slate-300 dark:border-slate-600"></div>
-              </button>
+            {/* Payment Methods */}
+            <div className="mb-6">
+              <p className="text-xs font-bold text-slate-500 uppercase mb-3">Pilih Metode Pembayaran</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { name: 'GoPay', icon: '💚', color: 'hover:border-green-500 hover:bg-green-50' },
+                  { name: 'OVO', icon: '💜', color: 'hover:border-purple-500 hover:bg-purple-50' },
+                  { name: 'DANA', icon: '💙', color: 'hover:border-blue-500 hover:bg-blue-50' },
+                  { name: 'ShopeePay', icon: '🧡', color: 'hover:border-orange-500 hover:bg-orange-50' },
+                  { name: 'BCA VA', icon: '🏦', color: 'hover:border-blue-500 hover:bg-blue-50' },
+                  { name: 'Mandiri VA', icon: '🏛️', color: 'hover:border-yellow-500 hover:bg-yellow-50' },
+                  { name: 'BRI VA', icon: '🔵', color: 'hover:border-blue-500 hover:bg-blue-50' },
+                  { name: 'BNI VA', icon: '🟠', color: 'hover:border-orange-500 hover:bg-orange-50' },
+                ].map(method => (
+                  <button 
+                    key={method.name}
+                    className={`flex items-center gap-2 p-3 border border-slate-200 dark:border-slate-700 rounded-xl ${method.color} dark:hover:bg-slate-800 transition-all text-sm font-bold text-slate-700 dark:text-slate-300`}
+                  >
+                    <span className="text-lg">{method.icon}</span>
+                    <span>{method.name}</span>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Credit Card Option */}
+              <div className="mt-3 p-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all cursor-pointer">
+                <div className="flex items-center gap-2 mb-2">
+                  <CreditCard size={18} className="text-slate-500" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300 text-sm">Kartu Kredit/Debit</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">VISA</span>
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">Mastercard</span>
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">JCB</span>
+                </div>
+              </div>
+
+              {/* BNPL Option */}
+              <div className="mt-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800 rounded-xl">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">✨</span>
+                    <span className="font-bold text-purple-700 dark:text-purple-300 text-sm">Cicilan 0%</span>
+                  </div>
+                  <span className="text-xs bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 px-2 py-1 rounded-full font-bold">3-12 Bulan</span>
+                </div>
+                <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">Kredivo, Akulaku, Atome tersedia</p>
+              </div>
             </div>
 
             <div className="flex gap-3">

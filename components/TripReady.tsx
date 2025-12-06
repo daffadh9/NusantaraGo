@@ -26,6 +26,23 @@ const TripReady: React.FC = () => {
     personalNotes: ''
   });
 
+  // Persona state
+  const [persona, setPersona] = useState({
+    gender: '',
+    ageRange: '',
+    travelStyle: '',
+    specialNeeds: [] as string[]
+  });
+
+  const toggleSpecialNeed = (need: string) => {
+    setPersona(prev => ({
+      ...prev,
+      specialNeeds: prev.specialNeeds.includes(need) 
+        ? prev.specialNeeds.filter(n => n !== need)
+        : [...prev.specialNeeds, need]
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.destination) return;
@@ -169,12 +186,116 @@ const TripReady: React.FC = () => {
             </div>
           </div>
 
-          {/* Section 2: Deep Personalization */}
+          {/* Section 2: Persona - Who Are You? */}
+          <div className="bg-white dark:bg-dark-card p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-dark-border shadow-sm">
+            <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
+              <Users className="text-indigo-500" /> Tentang Kamu
+            </h3>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Bantu AI memahami preferensimu lebih baik</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* Gender */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Jenis Kelamin</label>
+                <div className="flex gap-2">
+                  {[
+                    { value: 'male', label: '👨 Pria' },
+                    { value: 'female', label: '👩 Wanita' },
+                    { value: 'other', label: '🧑 Lainnya' }
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setPersona({...persona, gender: opt.value})}
+                      className={`flex-1 py-2 px-3 rounded-xl text-sm font-bold transition-all ${
+                        persona.gender === opt.value 
+                          ? 'bg-indigo-500 text-white' 
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-100'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Age Range */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Rentang Usia</label>
+                <select 
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium text-sm text-slate-800 dark:text-white"
+                  value={persona.ageRange}
+                  onChange={e => setPersona({...persona, ageRange: e.target.value})}
+                >
+                  <option value="">Pilih usia...</option>
+                  <option value="18-25">18-25 tahun</option>
+                  <option value="26-35">26-35 tahun</option>
+                  <option value="36-45">36-45 tahun</option>
+                  <option value="46-55">46-55 tahun</option>
+                  <option value="55+">55+ tahun</option>
+                </select>
+              </div>
+
+              {/* Travel Style */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Gaya Travel</label>
+                <select 
+                  className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium text-sm text-slate-800 dark:text-white"
+                  value={persona.travelStyle}
+                  onChange={e => setPersona({...persona, travelStyle: e.target.value})}
+                >
+                  <option value="">Pilih gaya...</option>
+                  <option value="backpacker">🎒 Backpacker</option>
+                  <option value="budget">💰 Budget Traveler</option>
+                  <option value="comfort">🛋️ Comfort Seeker</option>
+                  <option value="luxury">👑 Luxury Traveler</option>
+                  <option value="adventure">🏔️ Adventure Seeker</option>
+                  <option value="family">👨‍👩‍👧‍👦 Family Trip</option>
+                  <option value="solo">🧳 Solo Traveler</option>
+                  <option value="couple">💑 Couple/Honeymoon</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Special Needs Tags */}
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Kebutuhan Khusus (Pilih yang sesuai)</label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'baby', label: '👶 Bawa Bayi/Balita' },
+                  { id: 'elderly', label: '👴 Bawa Lansia' },
+                  { id: 'pregnant', label: '🤰 Ibu Hamil' },
+                  { id: 'disability', label: '♿ Disabilitas' },
+                  { id: 'halal', label: '🕌 Butuh Halal Food' },
+                  { id: 'vegetarian', label: '🥗 Vegetarian' },
+                  { id: 'allergy', label: '🤧 Ada Alergi' },
+                  { id: 'medication', label: '💊 Butuh Obat Rutin' },
+                  { id: 'pet', label: '🐕 Bawa Hewan Peliharaan' },
+                  { id: 'photography', label: '📷 Fokus Fotografi' },
+                ].map(need => (
+                  <button
+                    key={need.id}
+                    type="button"
+                    onClick={() => toggleSpecialNeed(need.id)}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
+                      persona.specialNeeds.includes(need.id)
+                        ? 'bg-indigo-500 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-100'
+                    }`}
+                  >
+                    {need.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Deep Personalization */}
           <div className="bg-white dark:bg-dark-card p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-dark-border shadow-sm ring-4 ring-indigo-50 dark:ring-indigo-900/20">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
               <MessageSquareQuote className="text-indigo-500" /> Deep Personalization
             </h3>
-            <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Ceritakan kondisi khususmu. Contoh: "Bawa bayi 2 tahun", "Saya alergi dingin", "Istri hamil muda", atau "Kami backpacker yang mau masak sendiri".</p>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Ceritakan kondisi khususmu lebih detail. Contoh: "Saya alergi seafood", "Istri hamil 5 bulan", atau "Kami mau masak sendiri di penginapan".</p>
             
             <textarea 
               className="w-full p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none min-h-[120px] text-slate-700 dark:text-white leading-relaxed placeholder-slate-400"

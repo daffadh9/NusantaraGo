@@ -234,7 +234,8 @@ const FoodTool = () => {
 }
 
 const BudgetTool = () => {
-    const [amount, setAmount] = useState<number>(1000000);
+    const [amount, setAmount] = useState<number>(2000000);
+    const [origin, setOrigin] = useState('');
     const [dest, setDest] = useState('');
     const [days, setDays] = useState(3);
     const [breakdown, setBreakdown] = useState<BudgetBreakdown[]>([]);
@@ -242,6 +243,7 @@ const BudgetTool = () => {
 
     const handleCalc = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!dest) return;
         setLoading(true);
         try {
             const res = await breakdownBudget(amount, dest, days);
@@ -249,38 +251,205 @@ const BudgetTool = () => {
         } catch(e) { console.error(e) } finally { setLoading(false) }
     };
 
-    return (
-        <div>
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2"><Calculator className="text-emerald-500"/> Smart Budget Planner</h3>
-            <form onSubmit={handleCalc} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div className="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl flex items-center gap-2">
-                    <span className="text-slate-400">Rp</span>
-                    <input type="number" value={amount} onChange={e=>setAmount(Number(e.target.value))} className="bg-transparent outline-none w-full font-bold"/>
-                </div>
-                <input value={dest} onChange={e=>setDest(e.target.value)} placeholder="Tujuan?" className="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl outline-none"/>
-                <input type="number" value={days} onChange={e=>setDays(Number(e.target.value))} placeholder="Hari" className="bg-slate-100 dark:bg-slate-800 p-3 rounded-xl outline-none"/>
-                <button disabled={loading} className="md:col-span-3 bg-emerald-600 text-white py-3 rounded-xl font-bold">{loading ? 'Menghitung...' : 'Hitung Breakdown'}</button>
-            </form>
+    const formatCurrency = (num: number) => new Intl.NumberFormat('id-ID').format(num);
 
-            {breakdown.length > 0 && (
-                <div className="space-y-4">
-                    {breakdown.map((item, i) => (
-                        <div key={i} className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-xs">
-                                {item.percentage}%
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex justify-between mb-1">
-                                    <span className="font-bold text-sm">{item.category}</span>
-                                    <span className="font-bold text-sm">Rp {item.amount.toLocaleString()}</span>
-                                </div>
-                                <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-1">
-                                    <div className="h-full bg-emerald-500" style={{width: `${item.percentage}%`}}></div>
-                                </div>
-                                <p className="text-xs text-slate-500">{item.tips}</p>
+    // Category colors
+    const getCategoryColor = (category: string) => {
+        const lower = category.toLowerCase();
+        if (lower.includes('transport') || lower.includes('perjalanan')) return 'from-blue-500 to-cyan-500';
+        if (lower.includes('akomodasi') || lower.includes('hotel') || lower.includes('penginapan')) return 'from-purple-500 to-pink-500';
+        if (lower.includes('makan') || lower.includes('kuliner') || lower.includes('food')) return 'from-orange-500 to-red-500';
+        if (lower.includes('wisata') || lower.includes('tiket') || lower.includes('attraction')) return 'from-emerald-500 to-teal-500';
+        if (lower.includes('darurat') || lower.includes('emergency') || lower.includes('lainnya')) return 'from-slate-500 to-slate-600';
+        return 'from-amber-500 to-yellow-500';
+    };
+
+    const getCategoryEmoji = (category: string) => {
+        const lower = category.toLowerCase();
+        if (lower.includes('transport') || lower.includes('perjalanan')) return '🚗';
+        if (lower.includes('akomodasi') || lower.includes('hotel') || lower.includes('penginapan')) return '🏨';
+        if (lower.includes('makan') || lower.includes('kuliner') || lower.includes('food')) return '🍜';
+        if (lower.includes('wisata') || lower.includes('tiket') || lower.includes('attraction')) return '🎫';
+        if (lower.includes('darurat') || lower.includes('emergency') || lower.includes('lainnya')) return '💰';
+        return '📦';
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                    <Calculator className="text-white" size={24} />
+                </div>
+                <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Smart Budget Planner</h3>
+                    <p className="text-sm text-slate-500">Hitung breakdown budget perjalananmu dengan AI</p>
+                </div>
+            </div>
+
+            {/* Input Form */}
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+                <form onSubmit={handleCalc} className="space-y-4">
+                    {/* Budget Amount */}
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">💵 Total Budget</label>
+                        <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">Rp</span>
+                            <input 
+                                type="number" 
+                                value={amount} 
+                                onChange={e=>setAmount(Number(e.target.value))} 
+                                className="w-full bg-white dark:bg-slate-800 pl-12 pr-4 py-4 rounded-xl outline-none border-2 border-transparent focus:border-emerald-500 font-bold text-xl transition-colors"
+                                placeholder="2000000"
+                            />
+                        </div>
+                        {/* Quick Amount Buttons */}
+                        <div className="flex gap-2 mt-2">
+                            {[1000000, 2000000, 5000000, 10000000].map(val => (
+                                <button 
+                                    key={val} 
+                                    type="button"
+                                    onClick={() => setAmount(val)}
+                                    className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
+                                        amount === val 
+                                            ? 'bg-emerald-500 text-white' 
+                                            : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-emerald-50'
+                                    }`}
+                                >
+                                    {(val/1000000)}jt
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Origin & Destination */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">📍 Dari Mana</label>
+                            <input 
+                                value={origin} 
+                                onChange={e=>setOrigin(e.target.value)} 
+                                placeholder="Jakarta, Bandung, dll..." 
+                                className="w-full bg-white dark:bg-slate-800 px-4 py-3 rounded-xl outline-none border-2 border-transparent focus:border-emerald-500 transition-colors"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">🎯 Tujuan</label>
+                            <input 
+                                value={dest} 
+                                onChange={e=>setDest(e.target.value)} 
+                                placeholder="Bali, Yogyakarta, dll..." 
+                                className="w-full bg-white dark:bg-slate-800 px-4 py-3 rounded-xl outline-none border-2 border-transparent focus:border-emerald-500 transition-colors"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    {/* Duration */}
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">📅 Durasi Perjalanan</label>
+                        <div className="flex items-center gap-4">
+                            <input 
+                                type="range" 
+                                min={1} 
+                                max={14} 
+                                value={days} 
+                                onChange={e=>setDays(Number(e.target.value))} 
+                                className="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                            />
+                            <div className="w-20 text-center py-2 bg-emerald-500 text-white rounded-xl font-bold">
+                                {days} Hari
                             </div>
                         </div>
-                    ))}
+                    </div>
+
+                    {/* Submit Button */}
+                    <button 
+                        type="submit"
+                        disabled={loading || !dest} 
+                        className="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                    >
+                        {loading ? (
+                            <>
+                                <Loader2 className="animate-spin" size={20} />
+                                Menghitung Budget...
+                            </>
+                        ) : (
+                            <>
+                                <PieChart size={20} />
+                                Hitung Breakdown Budget
+                            </>
+                        )}
+                    </button>
+                </form>
+            </div>
+
+            {/* Results */}
+            {breakdown.length > 0 && (
+                <div className="space-y-4 animate-in slide-in-from-bottom-4">
+                    {/* Summary Card */}
+                    <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 text-white">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-emerald-100 text-sm">Total Budget untuk {days} hari di {dest}</p>
+                                <p className="text-3xl font-black mt-1">Rp {formatCurrency(amount)}</p>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-emerald-100 text-sm">Per Hari</p>
+                                <p className="text-xl font-bold">Rp {formatCurrency(Math.round(amount / days))}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Breakdown Items */}
+                    <div className="grid gap-3">
+                        {breakdown.map((item, i) => (
+                            <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-shadow">
+                                <div className="flex items-center gap-4">
+                                    {/* Icon */}
+                                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${getCategoryColor(item.category)} flex items-center justify-center text-2xl shadow-lg`}>
+                                        {getCategoryEmoji(item.category)}
+                                    </div>
+                                    
+                                    {/* Content */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <span className="font-bold text-slate-900 dark:text-white">{item.category}</span>
+                                            <span className="font-black text-lg text-emerald-600">Rp {formatCurrency(item.amount)}</span>
+                                        </div>
+                                        
+                                        {/* Progress Bar */}
+                                        <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-2">
+                                            <div 
+                                                className={`h-full bg-gradient-to-r ${getCategoryColor(item.category)} rounded-full transition-all duration-500`} 
+                                                style={{width: `${item.percentage}%`}}
+                                            ></div>
+                                        </div>
+                                        
+                                        {/* Tips */}
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                                            💡 {item.tips}
+                                        </p>
+                                    </div>
+                                    
+                                    {/* Percentage Badge */}
+                                    <div className="text-center">
+                                        <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                                            <span className="font-black text-sm text-slate-700 dark:text-slate-300">{item.percentage}%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Tips Section */}
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
+                        <p className="text-sm text-amber-800 dark:text-amber-200 font-semibold flex items-center gap-2">
+                            <Info size={16} />
+                            Tips: Sisihkan 10-15% untuk dana darurat dan oleh-oleh!
+                        </p>
+                    </div>
                 </div>
             )}
         </div>

@@ -6,9 +6,20 @@ import Onboarding from './components/Onboarding';
 import Dashboard from './components/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import LogoUnified from './components/LogoUnified';
+import PaywallModal from './components/PaywallModal';
+import PaymentCheckout from './components/PaymentCheckout';
+import DevTestControls from './components/DevTestControls';
 import { User, TripPlan, UserInput, ViewState } from './types';
 import { generateItinerary } from './services/geminiService';
 import { onAuthStateChange, getCurrentUser } from './services/authService';
+import { 
+  canGenerateItinerary, 
+  incrementUsageCount, 
+  FeatureAccessResult,
+  getUserSubscription,
+  createFreeSubscription
+} from './services/subscriptionService';
+// Payment handled by PaymentCheckout component
 import { AlertTriangle } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -19,6 +30,13 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true); // Default dark
   const [isAuthLoading, setIsAuthLoading] = useState(true); // NEW: Auth loading state
+  
+  // Paywall & Subscription States
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [showPaymentCheckout, setShowPaymentCheckout] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<'premium' | 'business'>('premium');
+  const [paywallAccessResult, setPaywallAccessResult] = useState<FeatureAccessResult | null>(null);
+  const [pendingUserInput, setPendingUserInput] = useState<UserInput | null>(null);
 
   // --- Dark Mode Logic ---
   const toggleDarkMode = () => {
@@ -283,6 +301,47 @@ const App: React.FC = () => {
 
   const handleGenerateTrip = async (input: UserInput) => {
     console.log('🚀 Starting trip generation...', input);
+    console.log('👤 Current user state:', user ? { id: user.id, email: user.email } : 'null');
+    
+    // Check subscription quota before generating
+    // Use user.id if available, otherwise try to get from Supabase auth
+    let userId = user?.id;
+    
+    if (!userId) {
+      console.log('⚠️ User ID not in state, checking Supabase auth...');
+      try {
+        const { supabase } = await import('./lib/supabaseClient');
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        userId = authUser?.id;
+        console.log('🔑 Got user ID from Supabase:', userId);
+      } catch (authErr) {
+        console.warn('⚠️ Could not get user from Supabase:', authErr);
+      }
+    }
+    
+    if (userId) {
+      try {
+        console.log('🔐 Checking subscription quota for user:', userId);
+        const accessResult = await canGenerateItinerary(userId);
+        console.log('📊 Access result:', accessResult);
+        
+        if (!accessResult.allowed) {
+          console.log('⚠️ Quota exceeded, showing paywall');
+          setPaywallAccessResult(accessResult);
+          setPendingUserInput(input); // Save input for after upgrade
+          setShowPaywall(true);
+          return; // Don't proceed with generation
+        }
+        
+        console.log('✅ Quota OK:', accessResult.currentUsage, '/', accessResult.limit);
+      } catch (quotaErr) {
+        console.warn('⚠️ Could not check quota, proceeding anyway:', quotaErr);
+        // Continue with generation if quota check fails (graceful degradation)
+      }
+    } else {
+      console.warn('⚠️ No user ID available, skipping quota check (anonymous user)');
+    }
+    
     setIsLoading(true);
     setError(null);
     setTripPlan(null); // Reset previous trip
@@ -299,6 +358,16 @@ const App: React.FC = () => {
       
       setTripPlan(plan);
       console.log('✅ Trip plan set successfully');
+      
+      // Increment usage count after successful generation
+      if (userId) {
+        try {
+          await incrementUsageCount(userId);
+          console.log('📊 Usage count incremented for user:', userId);
+        } catch (usageErr) {
+          console.warn('⚠️ Could not increment usage count:', usageErr);
+        }
+      }
     } catch (err: any) {
       console.error('❌ Error generating itinerary:', err);
       console.error('❌ Error stack:', err.stack);
@@ -308,6 +377,33 @@ const App: React.FC = () => {
       setIsLoading(false);
       console.log('🏁 Trip generation complete');
     }
+  };
+
+  // Handle upgrade from paywall
+  const handleUpgrade = (plan: 'premium' | 'business') => {
+    console.log('💳 User wants to upgrade to:', plan);
+    setShowPaywall(false);
+    setSelectedPlan(plan);
+    setShowPaymentCheckout(true);
+  };
+
+  // Handle payment checkout close
+  const handlePaymentCheckoutClose = () => {
+    setShowPaymentCheckout(false);
+  };
+
+  // Handle payment success
+  const handlePaymentSuccess = () => {
+    setShowPaymentCheckout(false);
+    // Show success message or refresh subscription
+    console.log('✅ Payment initiated successfully');
+  };
+
+  // Close paywall and optionally retry with saved input
+  const handleClosePaywall = () => {
+    setShowPaywall(false);
+    setPaywallAccessResult(null);
+    // Don't clear pendingUserInput - user might want to try again
   };
 
   const handleResetTrip = () => {
@@ -380,6 +476,26 @@ const App: React.FC = () => {
           />
         </ErrorBoundary>
       )}
+
+      {/* Paywall Modal - Shows when AI quota exceeded */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={handleClosePaywall}
+        onUpgrade={handleUpgrade}
+        accessResult={paywallAccessResult || undefined}
+        featureName="AI Itinerary Generator"
+      />
+
+      {/* Payment Checkout Modal */}
+      <PaymentCheckout
+        isOpen={showPaymentCheckout}
+        onClose={handlePaymentCheckoutClose}
+        defaultPlan={selectedPlan}
+        onSuccess={handlePaymentSuccess}
+      />
+
+      {/* Dev Test Controls - Only visible in development */}
+      <DevTestControls />
     </div>
   );
 };
