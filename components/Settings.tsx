@@ -442,11 +442,11 @@ const Settings: React.FC<SettingsProps> = ({ onLogout, isDarkMode, toggleDarkMod
 
               <div className="space-y-3">
                 {[
-                  { icon: HelpCircle, label: 'Pusat Bantuan (FAQ)', href: '#' },
-                  { icon: FileText, label: 'Syarat & Ketentuan', href: '/terms.html' },
-                  { icon: Shield, label: 'Kebijakan Privasi', href: '/privacy.html' },
-                  { icon: Users, label: 'Hubungi Customer Service', href: '#' },
-                ].map(({ icon: Icon, label, href }) => (
+                  { icon: HelpCircle, label: 'Pusat Bantuan (FAQ)', href: '#', desc: 'Temukan jawaban cepat' },
+                  { icon: FileText, label: 'Syarat & Ketentuan', href: '#terms', desc: 'Aturan penggunaan layanan' },
+                  { icon: Shield, label: 'Kebijakan Privasi', href: '#privacy', desc: 'Cara kami melindungi datamu' },
+                  { icon: Users, label: 'Hubungi Support', href: 'mailto:support@nusantarago.id', desc: 'support@nusantarago.id' },
+                ].map(({ icon: Icon, label, href, desc }) => (
                   <a
                     key={label}
                     href={href}

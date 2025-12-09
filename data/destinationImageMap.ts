@@ -29,11 +29,18 @@ export const DESTINATION_IMAGE_MAP: Record<string, string> = {
   'Monkey Forest Ubud': 'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=800',
   
   // Jawa Barat
-  'Tangkuban Perahu': 'https://images.pexels.com/photos/2740956/pexels-photo-2740956.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'Kawah Putih': 'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'Pantai Pangandaran': 'https://images.pexels.com/photos/1680140/pexels-photo-1680140.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'Gunung Papandayan': 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=800',
-  'Situ Patenggang': 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=800',
+  'Tangkuban Perahu': 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=800', // Volcanic crater
+  'Kawah Putih': 'https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=800', // White crater lake
+  'Pantai Pangandaran': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800', // Beach
+  'Gunung Papandayan': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800', // Mountain
+  'Situ Patenggang': 'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800', // Lake
+  'Gedung Sate': 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=800', // Colonial building architecture
+  'Jalan Braga': 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=800', // City street with old buildings
+  'Ciater Hot Spring': 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800', // Hot spring natural pool
+  'Ciater': 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800',
+  'Kebun Raya Bogor': 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800', // Botanical garden
+  'Taman Safari': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', // Safari animals
+  'Taman Safari Indonesia': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800',
   
   // Jawa Tengah
   'Borobudur': 'https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -103,8 +110,22 @@ export const DESTINATION_IMAGE_MAP: Record<string, string> = {
 };
 
 /**
+ * Detect category from destination name keywords
+ */
+const detectCategory = (name: string): string => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('pantai') || lowerName.includes('beach') || lowerName.includes('pulau') || lowerName.includes('island') || lowerName.includes('gili') || lowerName.includes('nusa')) return 'Pantai';
+  if (lowerName.includes('gunung') || lowerName.includes('mount') || lowerName.includes('bukit') || lowerName.includes('kawah')) return 'Gunung';
+  if (lowerName.includes('danau') || lowerName.includes('lake') || lowerName.includes('air terjun') || lowerName.includes('curug') || lowerName.includes('coban')) return 'Alam';
+  if (lowerName.includes('candi') || lowerName.includes('temple') || lowerName.includes('pura') || lowerName.includes('keraton') || lowerName.includes('museum')) return 'Sejarah';
+  if (lowerName.includes('pasar') || lowerName.includes('kuliner') || lowerName.includes('resto') || lowerName.includes('warung')) return 'Kuliner';
+  if (lowerName.includes('kota') || lowerName.includes('city') || lowerName.includes('mall') || lowerName.includes('tugu')) return 'Budaya';
+  return 'default';
+};
+
+/**
  * Get accurate destination image by name
- * Falls back to Unsplash search with destination name if exact match not found
+ * Falls back to category-based image if exact match not found
  */
 export const getAccurateDestinationImage = (
   destinationName: string,
@@ -123,39 +144,32 @@ export const getAccurateDestinationImage = (
     }
   }
   
-  // Use Unsplash Source with specific destination name for dynamic matching
-  // This ensures images are relevant to the actual destination
-  const cleanName = destinationName
-    .replace(/rest area|rest stop|terminal|stasiun|bandara|pelabuhan/gi, '')
-    .trim();
+  // Smart fallback by detected category (no unreliable external API)
+  const detectedCat = detectCategory(destinationName);
+  const finalCategory = category || detectedCat;
   
-  if (cleanName) {
-    return `https://source.unsplash.com/800x600/?${encodeURIComponent(cleanName)},indonesia,travel`;
-  }
-  
-  // Fallback to category-based image
   const categoryImages: Record<string, string> = {
-    'Alam': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-    'Pantai': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
-    'Budaya': 'https://images.unsplash.com/photo-1552733407-5d5c46c3bb3b?w=800',
-    'Sejarah': 'https://images.unsplash.com/photo-1596402187264-eb63e0856996?w=800',
-    'Kuliner': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
-    'Gunung': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800',
-    'city': 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?w=800',
-    'landmark': 'https://images.unsplash.com/photo-1596402187264-eb63e0856996?w=800',
-    'rest_area': 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800',
-    'border': 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800',
-    'default': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
+    'Alam': 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Pantai': 'https://images.pexels.com/photos/1680140/pexels-photo-1680140.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Budaya': 'https://images.pexels.com/photos/3185480/pexels-photo-3185480.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Sejarah': 'https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Kuliner': 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Gunung': 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'city': 'https://images.pexels.com/photos/3185480/pexels-photo-3185480.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'landmark': 'https://images.pexels.com/photos/2161467/pexels-photo-2161467.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'rest_area': 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'border': 'https://images.pexels.com/photos/1659438/pexels-photo-1659438.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'default': 'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800',
   };
   
-  return categoryImages[category] || categoryImages['default'];
+  return categoryImages[finalCategory] || categoryImages['default'];
 };
 
 /**
- * Get destination image with fallback to dynamic Unsplash search
+ * Get destination image with smart fallback (no unreliable external API)
  */
 export const getDestinationImageDynamic = (name: string): string => {
-  // Check static map first
+  // Check static map first (exact match)
   if (DESTINATION_IMAGE_MAP[name]) {
     return DESTINATION_IMAGE_MAP[name];
   }
@@ -168,6 +182,17 @@ export const getDestinationImageDynamic = (name: string): string => {
     }
   }
   
-  // Use Unsplash Source API with destination name
-  return `https://source.unsplash.com/800x600/?${encodeURIComponent(name)},indonesia`;
+  // Smart fallback by detected category (reliable, no external API)
+  const category = detectCategory(name);
+  const categoryImages: Record<string, string> = {
+    'Alam': 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Pantai': 'https://images.pexels.com/photos/1680140/pexels-photo-1680140.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Budaya': 'https://images.pexels.com/photos/3185480/pexels-photo-3185480.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Sejarah': 'https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Kuliner': 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'Gunung': 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=800',
+    'default': 'https://images.pexels.com/photos/2132180/pexels-photo-2132180.jpeg?auto=compress&cs=tinysrgb&w=800',
+  };
+  
+  return categoryImages[category] || categoryImages['default'];
 };

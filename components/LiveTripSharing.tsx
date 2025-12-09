@@ -69,14 +69,88 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
     }
   };
 
+  const [sosCountdown, setSosCountdown] = useState(5);
+  const [sosTriggered, setSosTriggered] = useState(false);
+
   const triggerSOS = () => {
     setShowSOS(true);
-    // In real app: Send SMS/notification to emergency contacts
-    alert('🚨 SOS Alert terkirim ke kontak darurat!');
+    setSosCountdown(5);
+    
+    // Countdown before sending SOS
+    const interval = setInterval(() => {
+      setSosCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setSosTriggered(true);
+          // In real app: Send SMS/notification to emergency contacts
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const cancelSOS = () => {
+    setShowSOS(false);
+    setSosCountdown(5);
+    setSosTriggered(false);
   };
 
   return (
     <div className="max-w-2xl mx-auto pb-20 animate-in fade-in">
+      {/* SOS Modal */}
+      {showSOS && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full text-center animate-in zoom-in-95">
+            {!sosTriggered ? (
+              <>
+                <div className="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                  <span className="text-4xl font-bold text-white">{sosCountdown}</span>
+                </div>
+                <h2 className="text-2xl font-bold text-red-600 mb-2">🚨 Mengirim SOS...</h2>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">
+                  Alert akan dikirim ke kontak darurat dalam {sosCountdown} detik.
+                  <br/>Tekan tombol di bawah untuk membatalkan.
+                </p>
+                <button
+                  onClick={cancelSOS}
+                  className="w-full py-4 bg-slate-100 dark:bg-slate-700 rounded-2xl font-bold text-slate-700 dark:text-slate-300"
+                >
+                  BATALKAN
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <AlertTriangle size={48} className="text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-red-600 mb-2">✅ SOS Terkirim!</h2>
+                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                  Alert darurat telah dikirim ke:
+                </p>
+                <div className="space-y-2 mb-6">
+                  {emergencyContacts.map(c => (
+                    <div key={c.id} className="bg-red-50 dark:bg-red-900/20 p-3 rounded-xl text-sm">
+                      <strong>{c.name}</strong> ({c.relation}) - {c.phone}
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl text-sm text-amber-700 dark:text-amber-400 mb-4">
+                  <strong>Nomor Darurat Indonesia:</strong><br/>
+                  🚔 Polisi: 110 | 🚑 Ambulans: 119 | 🚒 Damkar: 113
+                </div>
+                <button
+                  onClick={cancelSOS}
+                  className="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl font-bold"
+                >
+                  Tutup
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center">

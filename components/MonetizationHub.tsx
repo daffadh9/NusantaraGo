@@ -221,7 +221,82 @@ const MonetizationHub: React.FC = () => {
              </div>
            </div>
 
-           <h3 className="text-xl font-bold text-slate-800 dark:text-white mt-8 mb-6">Redeem Katalog</h3>
+           {/* Challenge Section */}
+           <h3 className="text-xl font-bold text-slate-800 dark:text-white mt-8 mb-4 flex items-center gap-2">
+             🔥 Challenge Berhadiah
+           </h3>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+             {[
+               { 
+                 id: 'c1', 
+                 title: 'Konten Viral NusantaraGo', 
+                 desc: 'Upload konten travel dengan hashtag #NusantaraGo. Capai 100k views, dapat Rp 1.000.000!',
+                 reward: 'Rp 1.000.000',
+                 progress: 0,
+                 target: 100000,
+                 icon: '📱',
+                 color: 'from-pink-500 to-rose-500'
+               },
+               { 
+                 id: 'c2', 
+                 title: 'Referral Champion', 
+                 desc: 'Ajak 10 teman daftar & travel pakai NusantaraGo. Dapat voucher hotel Rp 500rb!',
+                 reward: 'Voucher Rp 500rb',
+                 progress: 3,
+                 target: 10,
+                 icon: '👥',
+                 color: 'from-blue-500 to-indigo-500'
+               },
+               { 
+                 id: 'c3', 
+                 title: 'Review Hunter', 
+                 desc: 'Tulis 5 review destinasi dengan foto. Dapat 5000 poin bonus!',
+                 reward: '5000 Poin',
+                 progress: 2,
+                 target: 5,
+                 icon: '✍️',
+                 color: 'from-emerald-500 to-teal-500'
+               },
+               { 
+                 id: 'c4', 
+                 title: 'Weekend Warrior', 
+                 desc: 'Kunjungi 3 destinasi dalam 1 weekend. Dapat badge eksklusif + 2000 poin!',
+                 reward: 'Badge + 2000 Poin',
+                 progress: 0,
+                 target: 3,
+                 icon: '🏃',
+                 color: 'from-amber-500 to-orange-500'
+               },
+             ].map(challenge => (
+               <div key={challenge.id} className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border p-5 hover:shadow-lg transition-all">
+                 <div className="flex items-start gap-4">
+                   <div className={`w-14 h-14 bg-gradient-to-br ${challenge.color} rounded-xl flex items-center justify-center text-2xl shadow-lg`}>
+                     {challenge.icon}
+                   </div>
+                   <div className="flex-1">
+                     <h4 className="font-bold text-slate-800 dark:text-white mb-1">{challenge.title}</h4>
+                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{challenge.desc}</p>
+                     <div className="flex items-center justify-between mb-2">
+                       <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                         Progress: {challenge.progress}/{challenge.target}
+                       </span>
+                       <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                         Hadiah: {challenge.reward}
+                       </span>
+                     </div>
+                     <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                       <div 
+                         className={`h-full bg-gradient-to-r ${challenge.color} rounded-full transition-all`}
+                         style={{ width: `${(challenge.progress / challenge.target) * 100}%` }}
+                       />
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             ))}
+           </div>
+
+           <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Redeem Katalog</h3>
            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
              {MOCK_REWARDS.map(reward => (
                <div key={reward.id} className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden hover:shadow-lg transition-all group cursor-pointer">

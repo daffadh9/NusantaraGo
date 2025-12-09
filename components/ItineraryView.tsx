@@ -623,10 +623,13 @@ const ItineraryView: React.FC<ItineraryViewProps> = ({ plan, userInput, onReset,
           {/* Action Box */}
           <div className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-xl sticky top-6">
               <div className="mb-6">
-                  <div className="text-xs font-bold text-slate-400 uppercase mb-1">Total Estimasi</div>
+                  <div className="text-xs font-bold text-slate-400 uppercase mb-1">Total Estimasi Biaya Trip</div>
                   <div className={`text-3xl font-extrabold ${isOverBudget ? 'text-red-600 dark:text-red-500' : 'text-slate-800 dark:text-white'}`}>
                     {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(trip_summary.total_estimated_cost_idr)}
                   </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    * Termasuk transport, makan, tiket masuk & akomodasi
+                  </p>
                   {userBudget && (
                     <div className="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400 flex justify-between items-center">
                        <span>Wallet: {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(userBudget)}</span>

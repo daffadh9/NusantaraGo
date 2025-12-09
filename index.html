@@ -138,6 +138,75 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
       }
+
+      /* Hide scrollbar utility */
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Smooth scroll for entire app */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Custom Cursor - Desktop only */
+      @media (pointer: fine) {
+        * {
+          cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="%2310B981" opacity="0.3"/><circle cx="10" cy="10" r="3" fill="%2310B981"/></svg>'), auto;
+        }
+        
+        a, button, .cursor-pointer {
+          cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="%2310B981" opacity="0.5"/><circle cx="12" cy="12" r="4" fill="%23fff"/></svg>'), pointer;
+        }
+      }
+
+      /* 📱 MOBILE OPTIMIZATIONS */
+      /* Touch-friendly tap targets */
+      @media (max-width: 768px) {
+        button, a, input, select, textarea {
+          min-height: 44px;
+          min-width: 44px;
+        }
+        
+        /* Prevent zoom on input focus (iOS) */
+        input, select, textarea {
+          font-size: 16px !important;
+        }
+        
+        /* Smooth momentum scrolling on iOS */
+        * {
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Disable text selection for better UX */
+        .no-select {
+          -webkit-user-select: none;
+          user-select: none;
+        }
+      }
+      
+      /* Safe area insets for notched phones */
+      @supports (padding: env(safe-area-inset-bottom)) {
+        .safe-bottom {
+          padding-bottom: env(safe-area-inset-bottom);
+        }
+        .safe-top {
+          padding-top: env(safe-area-inset-top);
+        }
+      }
+      
+      /* Reduce motion for users who prefer it */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
   <script type="importmap">
 {

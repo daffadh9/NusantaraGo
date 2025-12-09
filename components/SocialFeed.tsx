@@ -362,6 +362,35 @@ const SocialFeed: React.FC<SocialFeedProps> = ({ userId, userAvatar, userName })
   return (
     <div className="max-w-4xl mx-auto pb-20 px-4">
       
+      {/* Interests & Suggestions Banner */}
+      <div className="mb-6 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl p-6 shadow-lg relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <div className="relative z-10">
+          <h2 className="text-xl font-bold text-white mb-2">Selamat datang di Social Feed! 👋</h2>
+          <p className="text-emerald-50 text-sm mb-4">Bagikan pengalaman travelmu, temukan inspirasi, dan terhubung dengan traveler lainnya.</p>
+          <div className="flex flex-wrap gap-2">
+            {['📍 Share lokasi favoritmu', '📸 Post foto liburan', '💡 Berikan tips travel', '❓ Tanya rekomendasi'].map((item, i) => (
+              <span key={i} className="bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full">
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Suggestions */}
+      <div className="mb-6 flex flex-wrap gap-2">
+        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mr-2 py-1">Trending:</span>
+        {['#BaliTrip', '#ExploraNusantara', '#HiddenGems', '#KulinerLokal', '#RoadTrip2025', '#SoloTravel'].map((tag, i) => (
+          <button 
+            key={i}
+            className="bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-full transition-colors"
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
       {/* Stories Section */}
       <div className="mb-8 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">

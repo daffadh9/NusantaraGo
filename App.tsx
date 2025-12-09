@@ -9,6 +9,13 @@ import LogoUnified from './components/LogoUnified';
 import PaywallModal from './components/PaywallModal';
 import PaymentCheckout from './components/PaymentCheckout';
 import DevTestControls from './components/DevTestControls';
+import ScrollToTopButton from './components/ScrollToTopButton';
+import AboutUs from './components/AboutUs';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
+import CookiePolicy from './components/CookiePolicy';
+import GDPRCompliance from './components/GDPRCompliance';
+import AffiliateLanding from './components/AffiliateLanding';
 import { User, TripPlan, UserInput, ViewState } from './types';
 import { generateItinerary } from './services/geminiService';
 import { onAuthStateChange, getCurrentUser } from './services/authService';
@@ -37,6 +44,7 @@ const App: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<'premium' | 'business'>('premium');
   const [paywallAccessResult, setPaywallAccessResult] = useState<FeatureAccessResult | null>(null);
   const [pendingUserInput, setPendingUserInput] = useState<UserInput | null>(null);
+  const [usageRefreshTrigger, setUsageRefreshTrigger] = useState(0); // Increment to refresh UsageIndicator
 
   // --- Dark Mode Logic ---
   const toggleDarkMode = () => {
@@ -364,6 +372,8 @@ const App: React.FC = () => {
         try {
           await incrementUsageCount(userId);
           console.log('📊 Usage count incremented for user:', userId);
+          // Trigger UsageIndicator refresh
+          setUsageRefreshTrigger(prev => prev + 1);
         } catch (usageErr) {
           console.warn('⚠️ Could not increment usage count:', usageErr);
         }
@@ -473,6 +483,7 @@ const App: React.FC = () => {
             isDarkMode={isDarkMode}
             toggleDarkMode={toggleDarkMode}
             onUserUpdate={refreshUserProfile}
+            usageRefreshTrigger={usageRefreshTrigger}
           />
         </ErrorBoundary>
       )}
@@ -493,6 +504,17 @@ const App: React.FC = () => {
         defaultPlan={selectedPlan}
         onSuccess={handlePaymentSuccess}
       />
+
+      {/* Legal Pages & Affiliate */}
+      {viewState === 'about' && <AboutUs />}
+      {viewState === 'privacy' && <PrivacyPolicy onBack={() => setViewState('landing')} />}
+      {viewState === 'terms' && <TermsOfService onBack={() => setViewState('landing')} />}
+      {viewState === 'cookie' && <CookiePolicy />}
+      {viewState === 'gdpr' && <GDPRCompliance />}
+      {viewState === 'affiliate' && <AffiliateLanding />}
+
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
 
       {/* Dev Test Controls - Only visible in development */}
       <DevTestControls />

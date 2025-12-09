@@ -266,5 +266,73 @@ export interface Room {
   status: 'waiting' | 'playing' | 'finished';
 }
 
-export type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard';
-export type DashboardView = 'home' | 'planner' | 'trip_detail' | 'history' | 'profile' | 'trip_ready' | 'community' | 'pandu_ai' | 'monetization' | 'route_map' | 'library' | 'ai_tools' | 'play_zone' | 'settings' | 'social_feed' | 'communities' | 'travel_buddy' | 'live_sharing' | 'ticket_scanner' | 'insta_spot' | 'ibadah' | 'carbon' | 'local_deals' | 'island_hopper' | 'quests' | 'trip_movie' | 'ar_heritage' | 'bnpl' | 'voice_ai';
+export type ViewState = 'landing' | 'auth' | 'onboarding' | 'dashboard' | 'about' | 'privacy' | 'terms' | 'cookie' | 'gdpr' | 'affiliate';
+export type DashboardView = 'home' | 'planner' | 'trip_detail' | 'history' | 'profile' | 'trip_ready' | 'community' | 'pandu_ai' | 'monetization' | 'route_map' | 'library' | 'ai_tools' | 'play_zone' | 'settings' | 'social_feed' | 'communities' | 'travel_buddy' | 'live_sharing' | 'ticket_scanner' | 'insta_spot' | 'ibadah' | 'carbon' | 'local_deals' | 'island_hopper' | 'quests' | 'trip_movie' | 'ar_heritage' | 'bnpl' | 'voice_ai' | 'price_alert' | 'group_trip' | 'offline_companion' | 'creator_dashboard';
+
+// --- New Feature Types ---
+
+// Price Alert Types
+export interface PriceAlert {
+  id: string;
+  user_id: string;
+  type: 'flight' | 'hotel' | 'train' | 'bus';
+  route: string;
+  target_price: number;
+  current_price: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+// Group Trip Types
+export interface GroupTrip {
+  id: string;
+  name: string;
+  destination: string;
+  start_date: string;
+  end_date: string;
+  invite_code: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface GroupMember {
+  id: string;
+  trip_id: string;
+  user_id: string;
+  role: 'admin' | 'member';
+  status: 'confirmed' | 'pending' | 'declined';
+  total_paid: number;
+}
+
+export interface GroupExpense {
+  id: string;
+  trip_id: string;
+  title: string;
+  amount: number;
+  paid_by: string;
+  category: 'transport' | 'accommodation' | 'food' | 'activity' | 'other';
+  split_type: 'equal' | 'custom';
+  created_at: string;
+}
+
+// Offline Content Types
+export interface OfflineContent {
+  id: string;
+  user_id: string;
+  type: 'map' | 'itinerary' | 'phrasebook' | 'emergency' | 'guide';
+  title: string;
+  region: string;
+  size_mb: number;
+  downloaded_at: string;
+}
+
+// Creator Types
+export interface CreatorProfile {
+  id: string;
+  user_id: string;
+  tier: 'bronze' | 'silver' | 'gold' | 'pro';
+  followers: number;
+  total_earnings: number;
+  pending_payout: number;
+  is_verified: boolean;
+}

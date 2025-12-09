@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { User, TripPlan, UserInput, DashboardView } from '../types';
-import { Home, PlusCircle, Compass, LogOut, Bell, Menu, X, Wallet, Calendar, User as UserIcon, CheckSquare, Cloud, Flame, Gem, DollarSign, Users, Moon, Sun, Bot, MessageSquare, Map, BookOpen, Gift, TrendingUp, Filter, ChevronRight, Wrench, Gamepad2, Settings as SettingsIcon, Search, Star, MapPin, Image as ImageIcon } from 'lucide-react';
+import { Home, PlusCircle, Compass, LogOut, Bell, Menu, X, Wallet, Calendar, User as UserIcon, CheckSquare, Cloud, Flame, Gem, DollarSign, Users, Moon, Sun, Bot, MessageSquare, Map, BookOpen, Gift, TrendingUp, Filter, ChevronRight, Wrench, Gamepad2, Settings as SettingsIcon, Search, Star, MapPin, Image as ImageIcon, Sparkles } from 'lucide-react';
 import TripPlanner from './TripPlanner';
 import ItineraryView from './ItineraryView';
 import UserProfile from './UserProfile';
@@ -29,7 +29,7 @@ import TripLibrary from './TripLibrary';
 import { saveTrip as saveSupabaseTrip, SavedTrip as SupabaseSavedTrip } from '../services/tripService';
 
 // New Features
-import TravelBuddyMatcher from './TravelBuddyMatcher';
+import TravelBuddyMatcher from './TravelBuddyMatcherV2';
 import LiveTripSharing from './LiveTripSharing';
 import SmartTicketScanner from './SmartTicketScanner';
 import InstaSpotFinder from './InstaSpotFinder';
@@ -42,6 +42,22 @@ import TripMovieMaker from './TripMovieMaker';
 import ARHeritageTour from './ARHeritageTour';
 import TravelNowPayLater from './TravelNowPayLater';
 import AIVoiceAssistant from './AIVoiceAssistant';
+
+// Premium Features (Dec 2024)
+import SmartPriceAlert from './SmartPriceAlert';
+import GroupTripPlanner from './GroupTripPlanner';
+import OfflineTravelCompanion from './OfflineTravelCompanion';
+import CreatorDashboard from './CreatorDashboard';
+
+// AI-Powered Destination Cards & Enhanced UI
+import DestinationCard from './DestinationCard';
+import ContextualHero from './ContextualHero';
+import ScrollReveal from './ScrollReveal';
+import DestinationDetailView from './DestinationDetailView';
+import { AI_RECOMMENDED_DESTINATIONS } from '../data/aiDestinationData';
+import { DESTINATIONS_BY_CATEGORY, ALL_DESTINATIONS } from '../data/expandedDestinations';
+import { cn } from '../lib/utils';
+import { useSmoothScroll } from '../hooks/useSmoothScroll';
 
 // Local SavedTrip type for compatibility
 interface SavedTrip {
@@ -62,10 +78,11 @@ interface DashboardProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   onUserUpdate?: () => void;
+  usageRefreshTrigger?: number; // Trigger to refresh usage indicator after generation
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ 
-  user, onLogout, onGenerateTrip, tripPlan, isLoading, onResetTrip, isDarkMode, toggleDarkMode, onUserUpdate
+  user, onLogout, onGenerateTrip, tripPlan, isLoading, onResetTrip, isDarkMode, toggleDarkMode, onUserUpdate, usageRefreshTrigger = 0
 }) => {
   const [activeView, setActiveView] = useState<DashboardView>('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -87,6 +104,13 @@ const Dashboard: React.FC<DashboardProps> = ({
   // Save Trip State
   const [lastUserInput, setLastUserInput] = useState<UserInput | null>(null);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
+
+  // Destination Detail Modal State
+  const [selectedDestination, setSelectedDestination] = useState<any | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  // Enable smooth scrolling
+  useSmoothScroll();
 
   React.useEffect(() => {
     if (tripPlan) {
@@ -164,6 +188,46 @@ const Dashboard: React.FC<DashboardProps> = ({
     user.miles = newMiles;
   };
 
+  // Grouped Menu Structure
+  const menuGroups = [
+    {
+      label: 'MAIN',
+      items: [
+        { id: 'home', label: 'Dashboard', icon: <Home size={20} /> },
+        { id: 'planner', label: 'Buat Trip', icon: <PlusCircle size={20} /> },
+        { id: 'route_map', label: 'Peta Rute', icon: <Map size={20} /> },
+        { id: 'library', label: 'Library', icon: <BookOpen size={20} /> },
+        { id: 'history', label: 'Trip Saya', icon: <Calendar size={20} /> },
+      ]
+    },
+    {
+      label: 'DISCOVER',
+      items: [
+        { id: 'play_zone', label: 'PlayZone', icon: <Gamepad2 size={20} /> },
+        { id: 'social_feed', label: 'Social Feed', icon: <MessageSquare size={20} /> },
+        { id: 'communities', label: 'Komunitas', icon: <Users size={20} /> },
+        { id: 'insta_spot', label: 'Insta-Spot', icon: <ImageIcon size={20} /> },
+      ]
+    },
+    {
+      label: 'AI TOOLS',
+      items: [
+        { id: 'ai_tools', label: 'AI Toolbox', icon: <Wrench size={20} /> },
+        { id: 'trip_ready', label: 'TripReady AI', icon: <CheckSquare size={20} /> },
+        { id: 'travel_buddy', label: 'Travel Buddy', icon: <Users size={20} /> },
+        { id: 'carbon', label: 'Carbon Tracker', icon: <Cloud size={20} /> },
+      ]
+    },
+    {
+      label: 'MORE',
+      items: [
+        { id: 'monetization', label: 'Cuan & Rewards', icon: <Gift size={20} /> },
+        { id: 'local_deals', label: 'Local Deals', icon: <DollarSign size={20} /> },
+        { id: 'quests', label: 'Travel Quest', icon: <Star size={20} /> },
+      ]
+    }
+  ];
+
   const menuItems = [
     { id: 'home', label: 'Dashboard', icon: <Home size={20} /> },
     { id: 'planner', label: 'Buat Trip', icon: <PlusCircle size={20} /> },
@@ -189,6 +253,11 @@ const Dashboard: React.FC<DashboardProps> = ({
     { id: 'ar_heritage', label: 'AR Heritage', icon: <Compass size={20} /> },
     { id: 'bnpl', label: 'Pay Later', icon: <DollarSign size={20} /> },
     { id: 'voice_ai', label: 'Hey Nusa', icon: <Bot size={20} /> },
+    // Premium Features (Dec 2024) - WITH STAR BADGE
+    { id: 'price_alert', label: '⭐ Price Alert', icon: <Bell size={20} /> },
+    { id: 'group_trip', label: '⭐ Group Trip', icon: <Users size={20} /> },
+    { id: 'offline_companion', label: '⭐ Offline Mode', icon: <Cloud size={20} /> },
+    { id: 'creator_dashboard', label: '⭐ Creator Hub', icon: <TrendingUp size={20} /> },
     { id: 'history', label: 'Riwayat', icon: <Calendar size={20} /> },
     { id: 'settings', label: 'Pengaturan', icon: <SettingsIcon size={20} /> },
   ];
@@ -233,26 +302,39 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="px-4 py-6 space-y-1">
-            {menuItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                   setActiveView(item.id as DashboardView);
-                   setMobileMenuOpen(false);
-                   if (item.id === 'planner') onResetTrip();
-                }}
-                className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'} px-4 py-3 rounded-xl transition-all font-medium text-sm ${
-                  activeView === item.id 
-                    ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 shadow-sm font-bold' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
-                }`}
-                title={sidebarCollapsed ? item.label : ''}
-              >
-                {item.icon}
-                {!sidebarCollapsed && item.label}
-              </button>
+          {/* Navigation - Grouped */}
+          <nav className="px-4 py-6 space-y-6">
+            {menuGroups.map((group) => (
+              <div key={group.label}>
+                {!sidebarCollapsed && (
+                  <h3 className="px-4 mb-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                    {group.label}
+                  </h3>
+                )}
+                <div className="space-y-1">
+                  {group.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                         setActiveView(item.id as DashboardView);
+                         setMobileMenuOpen(false);
+                         if (item.id === 'planner') onResetTrip();
+                      }}
+                      className={cn(
+                        'w-full flex items-center px-4 py-3 rounded-xl transition-all font-medium text-sm',
+                        sidebarCollapsed ? 'justify-center' : 'gap-3',
+                        activeView === item.id 
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 font-bold' 
+                          : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                      )}
+                      title={sidebarCollapsed ? item.label : ''}
+                    >
+                      {item.icon}
+                      {!sidebarCollapsed && item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
         </div>
@@ -429,72 +511,61 @@ const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Views */}
           {activeView === 'home' && (
-             <div className="space-y-8 animate-in fade-in duration-500">
-               {/* Indonesia Map Visualization - STUNNING GLOWING MAP! */}
-               <div className="rounded-2xl shadow-lg border border-slate-200 dark:border-dark-border overflow-hidden">
-                 <IndonesiaMapGlowing 
-                    userName={user.name || user.full_name || 'Traveler'} 
-                    userAvatar={user.avatar || user.avatar_url} 
-                 />
-               </div>
+             <div className="space-y-8">
+               {/* Contextual Ambient Hero with AI Search */}
+               <ContextualHero 
+                 userName={user.name || user.full_name || 'Traveler'}
+                 onSearch={(query) => {
+                   console.log('🔍 AI Search:', query);
+                   // TODO: Implement AI search logic
+                 }}
+               />
 
-               {/* Advanced Search Component - NEW! */}
-               <div className="bg-white dark:bg-dark-card p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-dark-border">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                     <Compass className="w-5 h-5 text-amber-500" />
-                     Cari Destinasi Impian
-                  </h3>
-                  <AdvancedSearch 
-                     onSearch={(query, type) => {
-                        console.log('🔍 Searching:', query, 'Type:', type);
-                        // TODO: Implement actual search logic here
-                        // For now, just log to console
-                     }}
-                  />
-               </div>
-
-               {/* Category Filters - NEW! */}
-               <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                     <Filter className="w-6 h-6 text-amber-500" />
-                     Jelajah Berdasarkan Kategori
-                  </h3>
-                  
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                     {[
-                        { id: 'hidden-gems', name: 'Hidden Gems', icon: '💎', color: 'from-purple-500 to-pink-500' },
-                        { id: 'nature', name: 'Alam & Pegunungan', icon: '🏔️', color: 'from-green-500 to-emerald-500' },
-                        { id: 'culinary', name: 'Kuliner Lokal', icon: '🍜', color: 'from-orange-500 to-red-500' },
-                        { id: 'beach', name: 'Pantai & Laut', icon: '🏖️', color: 'from-blue-500 to-cyan-500' },
-                        { id: 'culture', name: 'Sejarah & Budaya', icon: '🏛️', color: 'from-amber-500 to-yellow-500' },
-                        { id: 'instagram', name: 'Instagramable Spot', icon: '📸', color: 'from-pink-500 to-rose-500' },
-                        { id: 'adventure', name: 'Petualangan', icon: '🧗', color: 'from-teal-500 to-green-500' },
-                        { id: 'family', name: 'Ramah Keluarga', icon: '👨‍👩‍👧‍👦', color: 'from-indigo-500 to-purple-500' },
-                     ].map((category) => (
-                        <button
-                           key={category.id}
-                           onClick={() => setActiveFilter(activeFilter === category.id ? null : category.id)}
-                           className={`group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br ${category.color} text-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 ${
-                              activeFilter === category.id ? 'ring-4 ring-white ring-offset-2 dark:ring-offset-slate-900 scale-105' : ''
-                           }`}
-                        >
-                           <div className="relative z-10">
-                              <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-300">
-                                 {category.icon}
-                              </div>
-                              <h4 className="font-bold text-sm">{category.name}</h4>
-                           </div>
-                           {/* Animated background */}
-                           <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
-                           {/* Active indicator */}
-                           {activeFilter === category.id && (
-                              <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                                 <CheckSquare size={14} className="text-slate-900" />
-                              </div>
-                           )}
-                        </button>
-                     ))}
-                  </div>
+               {/* Category Filters with Scroll Reveal */}
+               <ScrollReveal>
+                 <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                       <Filter className="w-6 h-6 text-emerald-500" />
+                       Jelajah Berdasarkan Kategori
+                    </h3>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                       {[
+                          { id: 'hidden-gems', name: 'Hidden Gems', icon: '💎', color: 'from-purple-500 to-pink-500' },
+                          { id: 'nature', name: 'Alam & Pegunungan', icon: '🏔️', color: 'from-green-500 to-emerald-500' },
+                          { id: 'culinary', name: 'Kuliner Lokal', icon: '🍜', color: 'from-orange-500 to-red-500' },
+                          { id: 'beach', name: 'Pantai & Laut', icon: '🏖️', color: 'from-blue-500 to-cyan-500' },
+                          { id: 'culture', name: 'Sejarah & Budaya', icon: '🏛️', color: 'from-amber-500 to-yellow-500' },
+                          { id: 'instagram', name: 'Instagramable Spot', icon: '📸', color: 'from-pink-500 to-rose-500' },
+                          { id: 'adventure', name: 'Petualangan', icon: '🧗', color: 'from-teal-500 to-green-500' },
+                          { id: 'family', name: 'Ramah Keluarga', icon: '👨‍👩‍👧‍👦', color: 'from-indigo-500 to-purple-500' },
+                       ].map((category) => (
+                          <button
+                             key={category.id}
+                             onClick={() => setActiveFilter(activeFilter === category.id ? null : category.id)}
+                             className={cn(
+                               'group relative overflow-hidden rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300',
+                               `bg-gradient-to-br ${category.color}`,
+                               activeFilter === category.id && 'ring-4 ring-emerald-400 ring-offset-2 dark:ring-offset-slate-900 scale-105'
+                             )}
+                          >
+                             <div className="relative z-10">
+                                <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-300">
+                                   {category.icon}
+                                </div>
+                                <h4 className="font-bold text-sm">{category.name}</h4>
+                             </div>
+                             {/* Animated background */}
+                             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
+                             {/* Active indicator */}
+                             {activeFilter === category.id && (
+                                <div className="absolute top-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                                   <CheckSquare size={14} className="text-slate-900" />
+                                </div>
+                             )}
+                          </button>
+                       ))}
+                    </div>
 
                   {/* Active Filter Badge */}
                   {activeFilter && (
@@ -514,78 +585,155 @@ const Dashboard: React.FC<DashboardProps> = ({
                         </button>
                      </div>
                   )}
-               </div>
-
-               {/* Inspirational Content - Horizontal Scroll Grid */}
-               <div>
-                 <div className="flex justify-between items-end mb-6">
-                    <div>
-                        <h3 className="font-bold text-slate-800 dark:text-white text-2xl">Inspirasi Minggu Ini</h3>
-                        <p className="text-slate-500 dark:text-slate-400">Destinasi pilihan kurasi AI spesial buat kamu.</p>
-                    </div>
-                    <button className="text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:underline">Lihat Semua</button>
                  </div>
-                 
-                 <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
-                   {[
-                     { name: 'Raja Ampat', img: 'https://images.pexels.com/photos/3601425/pexels-photo-3601425.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-blue-600 to-cyan-500', desc: 'Surga diving & kepulauan eksotis' },
-                     { name: 'Danau Toba', img: 'https://images.pexels.com/photos/11693971/pexels-photo-11693971.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-blue-500 to-teal-500', desc: 'Danau vulkanik terbesar di Asia Tenggara' },
-                     { name: 'Likupang', img: 'https://images.pexels.com/photos/1007657/pexels-photo-1007657.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-cyan-500 to-blue-600', desc: 'Pantai pasir putih & air kristal' },
-                     { name: 'Mandalika', img: 'https://images.pexels.com/photos/1287460/pexels-photo-1287460.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-orange-500 to-pink-500', desc: 'Pantai indah dengan sunset menawan' },
-                     { name: 'Labuan Bajo', img: 'https://images.pexels.com/photos/3601421/pexels-photo-3601421.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-emerald-500 to-blue-500', desc: 'Gerbang menuju Komodo & pulau cantik' },
-                     { name: 'Borobudur', img: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-amber-600 to-orange-500', desc: 'Candi Buddha terbesar di dunia' },
-                     { name: 'Bromo', img: 'https://images.pexels.com/photos/2832034/pexels-photo-2832034.jpeg?auto=compress&cs=tinysrgb&w=600&h=900', gradient: 'from-purple-600 to-pink-500', desc: 'Gunung berapi dengan sunrise spektakuler' }
-                   ].map((place, i) => (
-                     <div key={place.name} className="min-w-[320px] md:min-w-[360px] h-[480px] snap-center group relative rounded-3xl overflow-hidden cursor-pointer shadow-2xl border-2 border-slate-200 dark:border-dark-border hover:border-emerald-400 transition-all duration-300" onClick={() => setActiveView('planner')}>
-                       {/* Gradient Background */}
-                       <div className={`absolute inset-0 bg-gradient-to-br ${place.gradient}`}></div>
-                       
-                       {/* Image with Better Error Handling */}
-                       <img 
-                        src={place.img} 
-                        alt={place.name}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 brightness-90 group-hover:brightness-100" 
-                        loading="lazy"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          target.style.display = 'none';
-                          console.warn('Failed to load image for:', place.name);
-                        }}
-                       />
-                       
-                       {/* Overlay Gradient */}
-                       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300"></div>
-                       
-                       {/* Content */}
-                       <div className="absolute inset-0 flex flex-col justify-end p-6">
-                         <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                           {/* Badge */}
-                           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/90 backdrop-blur-sm rounded-full text-xs text-white font-bold mb-3">
-                               <Gem size={14} /> Super Priority
-                           </div>
-                           
-                           {/* Title */}
-                           <h4 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">{place.name}</h4>
-                           
-                           {/* Description */}
-                           <p className="text-sm text-slate-200 mb-4 line-clamp-2 opacity-90">
-                               {place.desc}
-                           </p>
-                           
-                           {/* CTA Button */}
-                           <button className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 hover:bg-emerald-500 backdrop-blur-md text-white rounded-xl font-semibold text-sm transition-all duration-300 border border-white/30 hover:border-emerald-400 opacity-0 group-hover:opacity-100">
-                               <Compass size={16} />
-                               Jelajahi Sekarang
-                           </button>
-                         </div>
+               </ScrollReveal>
+
+               {/* Filtered Destinations (When Category Selected) */}
+               {activeFilter && DESTINATIONS_BY_CATEGORY[activeFilter] && (
+                 <ScrollReveal delay={0.2}>
+                   <div className="mb-12">
+                     <div className="flex justify-between items-end mb-6">
+                        <div>
+                            <h3 className="font-bold text-slate-800 dark:text-white text-2xl flex items-center gap-2">
+                              <Sparkles className="w-6 h-6 text-emerald-500 animate-pulse" />
+                              {activeFilter === 'hidden-gems' && 'Hidden Gems Untukmu'}
+                              {activeFilter === 'nature' && 'Destinasi Alam & Pegunungan'}
+                              {activeFilter === 'culinary' && 'Kuliner Lokal Terbaik'}
+                              {activeFilter === 'beach' && 'Pantai & Laut Menawan'}
+                              {activeFilter === 'culture' && 'Sejarah & Budaya'}
+                              {activeFilter === 'instagram' && 'Spot Instagramable'}
+                              {activeFilter === 'adventure' && 'Petualangan Seru'}
+                              {activeFilter === 'family' && 'Ramah Keluarga'}
+                            </h3>
+                            <p className="text-slate-500 dark:text-slate-400">
+                              {DESTINATIONS_BY_CATEGORY[activeFilter].length} destinasi ditemukan
+                            </p>
+                        </div>
+                     </div>
+                     
+                     <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                       {DESTINATIONS_BY_CATEGORY[activeFilter].map((dest, index) => (
+                         <ScrollReveal key={dest.id} delay={0.05 * index}>
+                           <DestinationCard
+                             {...dest}
+                             onClick={() => {
+                               setSelectedDestination(dest);
+                               setIsDetailModalOpen(true);
+                             }}
+                           />
+                         </ScrollReveal>
+                       ))}
+                     </div>
+                   </div>
+                 </ScrollReveal>
+               )}
+
+               {/* 3 Rows of AI Recommendations (When No Filter) */}
+               {!activeFilter && (
+                 <>
+                   {/* Row 1: Hidden Gems */}
+                   <ScrollReveal delay={0.2}>
+                     <div className="mb-12">
+                       <div className="flex justify-between items-end mb-6">
+                          <div>
+                              <h3 className="font-bold text-slate-800 dark:text-white text-2xl flex items-center gap-2">
+                                💎
+                                Hidden Gems Untukmu
+                              </h3>
+                              <p className="text-slate-500 dark:text-slate-400">Destinasi tersembunyi yang belum banyak orang tahu</p>
+                          </div>
+                          <button 
+                            onClick={() => setActiveFilter('hidden-gems')}
+                            className="text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:underline flex items-center gap-1 group"
+                          >
+                            Lihat Semua <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                          </button>
                        </div>
                        
-                       {/* Hover Border Effect */}
-                       <div className="absolute inset-0 border-4 border-emerald-400/0 group-hover:border-emerald-400/60 rounded-3xl transition-all duration-500 pointer-events-none"></div>
+                       <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                         {DESTINATIONS_BY_CATEGORY['hidden-gems'].map((dest, index) => (
+                           <DestinationCard
+                             key={dest.id}
+                             {...dest}
+                             onClick={() => {
+                               setSelectedDestination(dest);
+                               setIsDetailModalOpen(true);
+                             }}
+                           />
+                         ))}
+                       </div>
                      </div>
-                   ))}
-                 </div>
-               </div>
+                   </ScrollReveal>
+
+                   {/* Row 2: Beach & Sea */}
+                   <ScrollReveal delay={0.3}>
+                     <div className="mb-12">
+                       <div className="flex justify-between items-end mb-6">
+                          <div>
+                              <h3 className="font-bold text-slate-800 dark:text-white text-2xl flex items-center gap-2">
+                                🏖️
+                                Pantai & Laut Eksotis
+                              </h3>
+                              <p className="text-slate-500 dark:text-slate-400">Surga tropis menanti petualanganmu</p>
+                          </div>
+                          <button 
+                            onClick={() => setActiveFilter('beach')}
+                            className="text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:underline flex items-center gap-1 group"
+                          >
+                            Lihat Semua <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                          </button>
+                       </div>
+                       
+                       <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                         {DESTINATIONS_BY_CATEGORY['beach'].map((dest, index) => (
+                           <DestinationCard
+                             key={dest.id}
+                             {...dest}
+                             onClick={() => {
+                               setSelectedDestination(dest);
+                               setIsDetailModalOpen(true);
+                             }}
+                           />
+                         ))}
+                       </div>
+                     </div>
+                   </ScrollReveal>
+
+                   {/* Row 3: Culinary */}
+                   <ScrollReveal delay={0.4}>
+                     <div className="mb-12">
+                       <div className="flex justify-between items-end mb-6">
+                          <div>
+                              <h3 className="font-bold text-slate-800 dark:text-white text-2xl flex items-center gap-2">
+                                🍜
+                                Kuliner Lokal Legendaris
+                              </h3>
+                              <p className="text-slate-500 dark:text-slate-400">Jelajahi cita rasa autentik Nusantara</p>
+                          </div>
+                          <button 
+                            onClick={() => setActiveFilter('culinary')}
+                            className="text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:underline flex items-center gap-1 group"
+                          >
+                            Lihat Semua <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                          </button>
+                       </div>
+                       
+                       <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                         {DESTINATIONS_BY_CATEGORY['culinary'].map((dest, index) => (
+                           <DestinationCard
+                             key={dest.id}
+                             {...dest}
+                             onClick={() => {
+                               setSelectedDestination(dest);
+                               setIsDetailModalOpen(true);
+                             }}
+                           />
+                         ))}
+                       </div>
+                     </div>
+                   </ScrollReveal>
+                 </>
+               )}
              </div>
           )}
 
@@ -595,6 +743,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               onGenerate={handleGenerate} 
               isLoading={isLoading} 
               userId={user.id}
+              usageRefreshTrigger={usageRefreshTrigger}
             />
           </div>
           {activeView === 'trip_ready' && <TripReady />}
@@ -622,6 +771,12 @@ const Dashboard: React.FC<DashboardProps> = ({
           {activeView === 'ar_heritage' && <ARHeritageTour userId={user.id} />}
           {activeView === 'bnpl' && <TravelNowPayLater userId={user.id} />}
           {activeView === 'voice_ai' && <AIVoiceAssistant userId={user.id} />}
+          
+          {/* Premium Features (Dec 2024) */}
+          {activeView === 'price_alert' && <SmartPriceAlert />}
+          {activeView === 'group_trip' && <GroupTripPlanner />}
+          {activeView === 'offline_companion' && <OfflineTravelCompanion />}
+          {activeView === 'creator_dashboard' && <CreatorDashboard />}
           
           {activeView === 'trip_detail' && displayPlan && (
             <div className="space-y-6">
@@ -699,6 +854,19 @@ const Dashboard: React.FC<DashboardProps> = ({
         <PanduCommandCenter 
           onClose={() => setIsPanduOpen(false)} 
           userName={user.name} 
+        />
+      )}
+
+      {/* Destination Detail Modal - Immersive Trip Planner */}
+      {selectedDestination && (
+        <DestinationDetailView
+          destination={selectedDestination}
+          isOpen={isDetailModalOpen}
+          onClose={() => {
+            setIsDetailModalOpen(false);
+            setSelectedDestination(null);
+          }}
+          userName={user.name || user.full_name || 'Traveler'}
         />
       )}
 

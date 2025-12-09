@@ -79,8 +79,27 @@ const TravelBuddyMatcher: React.FC<{ userId: string }> = ({ userId }) => {
   const [activeTab, setActiveTab] = useState<'discover' | 'matches'>('discover');
   const [swipeAnim, setSwipeAnim] = useState<'left' | 'right' | null>(null);
   const [showMatch, setShowMatch] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  
+  // Filters
+  const [filters, setFilters] = useState({
+    gender: 'all',
+    ageMin: 18,
+    ageMax: 50,
+    travelStyle: 'all',
+    verifiedOnly: false
+  });
 
-  const currentBuddy = MOCK_BUDDIES[currentIndex];
+  // Apply filters
+  const filteredBuddies = MOCK_BUDDIES.filter(buddy => {
+    if (filters.gender !== 'all' && buddy.gender !== filters.gender) return false;
+    if (buddy.age < filters.ageMin || buddy.age > filters.ageMax) return false;
+    if (filters.travelStyle !== 'all' && buddy.travelStyle !== filters.travelStyle) return false;
+    if (filters.verifiedOnly && !buddy.verified) return false;
+    return true;
+  });
+
+  const currentBuddy = filteredBuddies[currentIndex];
 
   const handleSwipe = (dir: 'left' | 'right') => {
     if (!currentBuddy) return;
@@ -110,21 +129,101 @@ const TravelBuddyMatcher: React.FC<{ userId: string }> = ({ userId }) => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 mb-6 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
-        <button onClick={() => setActiveTab('discover')}
-          className={`flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-            activeTab === 'discover' ? 'bg-white dark:bg-slate-700 text-pink-600 shadow' : 'text-slate-500'
-          }`}>
-          <Sparkles size={18} /> Discover
-        </button>
-        <button onClick={() => setActiveTab('matches')}
-          className={`flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-            activeTab === 'matches' ? 'bg-white dark:bg-slate-700 text-pink-600 shadow' : 'text-slate-500'
-          }`}>
-          <Heart size={18} /> Matches ({matches.length})
+      {/* Safety Banner */}
+      <div className="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 flex items-center gap-3">
+        <Shield size={24} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-blue-800 dark:text-blue-300">Verified & Safe Community</p>
+          <p className="text-xs text-blue-600 dark:text-blue-400">Semua member terverifikasi. Laporkan perilaku mencurigakan.</p>
+        </div>
+      </div>
+
+      {/* Tabs + Filter */}
+      <div className="flex gap-2 mb-6">
+        <div className="flex-1 flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
+          <button onClick={() => setActiveTab('discover')}
+            className={`flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'discover' ? 'bg-white dark:bg-slate-700 text-pink-600 shadow' : 'text-slate-500'
+            }`}>
+            <Sparkles size={18} /> Discover
+          </button>
+          <button onClick={() => setActiveTab('matches')}
+            className={`flex-1 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'matches' ? 'bg-white dark:bg-slate-700 text-pink-600 shadow' : 'text-slate-500'
+            }`}>
+            <Heart size={18} /> Matches ({matches.length})
+          </button>
+        </div>
+        <button 
+          onClick={() => setShowFilters(!showFilters)}
+          className={`p-3 rounded-2xl transition-all ${showFilters ? 'bg-pink-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}
+        >
+          <Filter size={20} />
         </button>
       </div>
+
+      {/* Filters Panel */}
+      {showFilters && (
+        <div className="mb-6 bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-lg animate-in fade-in slide-in-from-top-2">
+          <h4 className="font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+            <Filter size={16} /> Filter Preferensi
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Gender</label>
+              <select 
+                value={filters.gender}
+                onChange={e => { setFilters({...filters, gender: e.target.value}); setCurrentIndex(0); }}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"
+              >
+                <option value="all">Semua</option>
+                <option value="male">Pria</option>
+                <option value="female">Wanita</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Usia Min</label>
+              <input 
+                type="number" min={18} max={60}
+                value={filters.ageMin}
+                onChange={e => { setFilters({...filters, ageMin: parseInt(e.target.value)}); setCurrentIndex(0); }}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Usia Max</label>
+              <input 
+                type="number" min={18} max={60}
+                value={filters.ageMax}
+                onChange={e => { setFilters({...filters, ageMax: parseInt(e.target.value)}); setCurrentIndex(0); }}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Gaya Travel</label>
+              <select 
+                value={filters.travelStyle}
+                onChange={e => { setFilters({...filters, travelStyle: e.target.value}); setCurrentIndex(0); }}
+                className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm"
+              >
+                <option value="all">Semua</option>
+                <option value="adventure">Adventure</option>
+                <option value="cultural">Cultural</option>
+                <option value="backpacker">Backpacker</option>
+              </select>
+            </div>
+          </div>
+          <label className="flex items-center gap-2 mt-4 cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={filters.verifiedOnly}
+              onChange={e => { setFilters({...filters, verifiedOnly: e.target.checked}); setCurrentIndex(0); }}
+              className="w-4 h-4 rounded text-pink-500"
+            />
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Hanya tampilkan profil terverifikasi</span>
+          </label>
+        </div>
+      )}
 
       {/* Match Animation */}
       {showMatch && (

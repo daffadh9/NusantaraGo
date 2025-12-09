@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { 
   Camera, Ticket, QrCode, Plane, Train, Bus, Ship,
   Calendar, Clock, MapPin, CheckCircle, AlertCircle,
-  Upload, Loader2, Sparkles, FileText, Download, Trash2
+  Upload, Loader2, Sparkles, FileText, Download, Trash2,
+  Share2, CalendarPlus, Eye, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 interface ScannedTicket {
@@ -94,8 +95,30 @@ const SmartTicketScanner: React.FC<{ userId: string }> = ({ userId }) => {
     }
   };
 
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+
   const deleteTicket = (id: string) => {
     setTickets(prev => prev.filter(t => t.id !== id));
+  };
+
+  const addToCalendar = (ticket: ScannedTicket) => {
+    // In real app: Use native calendar API
+    const event = {
+      title: ticket.title,
+      start: `${ticket.date}T${ticket.time}`,
+      location: `${ticket.from} to ${ticket.to}`
+    };
+    alert(`📅 Tiket ditambahkan ke kalender!\n${ticket.title} - ${ticket.date}`);
+  };
+
+  const shareTicket = (ticket: ScannedTicket) => {
+    const text = `🎫 ${ticket.title}\n📍 ${ticket.from} → ${ticket.to}\n📅 ${ticket.date} ${ticket.time}\n🎟️ Booking: ${ticket.bookingCode}`;
+    if (navigator.share) {
+      navigator.share({ title: 'My Ticket', text });
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('✅ Info tiket disalin ke clipboard!');
+    }
   };
 
   return (
@@ -223,36 +246,82 @@ const SmartTicketScanner: React.FC<{ userId: string }> = ({ userId }) => {
           ) : (
             tickets.map(ticket => {
               const Icon = TICKET_ICONS[ticket.type];
+              const isExpanded = expandedTicket === ticket.id;
               return (
-                <div key={ticket.id} className="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow relative overflow-hidden">
+                <div key={ticket.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow overflow-hidden">
                   {/* Status Badge */}
-                  <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-semibold rounded-bl-xl ${
+                  <div className={`px-4 py-2 text-xs font-semibold flex items-center justify-between ${
                     ticket.status === 'upcoming' ? 'bg-emerald-500 text-white' :
                     ticket.status === 'used' ? 'bg-slate-400 text-white' : 'bg-red-500 text-white'
                   }`}>
-                    {ticket.status === 'upcoming' ? '🟢 Upcoming' : ticket.status === 'used' ? '✓ Used' : '⏰ Expired'}
+                    <span>{ticket.status === 'upcoming' ? '🟢 Upcoming' : ticket.status === 'used' ? '✓ Used' : '⏰ Expired'}</span>
+                    <span className="font-mono">{ticket.bookingCode}</span>
                   </div>
 
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <Icon size={24} className="text-violet-500" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-slate-900 dark:text-white">{ticket.title}</h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">{ticket.from} → {ticket.to}</p>
-                      <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
-                        <span className="flex items-center gap-1"><Calendar size={12} /> {ticket.date}</span>
-                        <span className="flex items-center gap-1"><Clock size={12} /> {ticket.time}</span>
-                        {ticket.seat && <span>Seat: {ticket.seat}</span>}
+                  <div className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-violet-100 dark:bg-violet-900/30 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <Icon size={24} className="text-violet-500" />
                       </div>
-                      <div className="mt-2 inline-block bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-lg">
-                        <span className="text-xs text-slate-500">Booking: </span>
-                        <span className="font-mono font-bold text-violet-600">{ticket.bookingCode}</span>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-slate-900 dark:text-white">{ticket.title}</h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{ticket.from} → {ticket.to}</p>
+                        <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
+                          <span className="flex items-center gap-1"><Calendar size={12} /> {ticket.date}</span>
+                          <span className="flex items-center gap-1"><Clock size={12} /> {ticket.time}</span>
+                          {ticket.seat && <span className="bg-violet-100 dark:bg-violet-900/30 px-2 py-0.5 rounded text-violet-600 dark:text-violet-400 font-bold">Seat {ticket.seat}</span>}
+                        </div>
                       </div>
+                      <button 
+                        onClick={() => setExpandedTicket(isExpanded ? null : ticket.id)} 
+                        className="p-2 text-slate-400 hover:text-violet-500"
+                      >
+                        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                      </button>
                     </div>
-                    <button onClick={() => deleteTicket(ticket.id)} className="p-2 text-slate-400 hover:text-red-500">
-                      <Trash2 size={18} />
-                    </button>
+
+                    {/* Expanded Actions */}
+                    {isExpanded && (
+                      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700 animate-in fade-in slide-in-from-top-2">
+                        {/* QR Code Placeholder */}
+                        <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 mb-4 text-center">
+                          <div className="w-32 h-32 bg-white mx-auto rounded-lg flex items-center justify-center border-2 border-slate-200">
+                            <QrCode size={80} className="text-slate-300" />
+                          </div>
+                          <p className="text-xs text-slate-500 mt-2">Scan QR ini di counter / gate</p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="grid grid-cols-3 gap-2">
+                          <button 
+                            onClick={() => addToCalendar(ticket)}
+                            className="py-2 px-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl text-xs font-semibold flex items-center justify-center gap-1"
+                          >
+                            <CalendarPlus size={14} /> Kalender
+                          </button>
+                          <button 
+                            onClick={() => shareTicket(ticket)}
+                            className="py-2 px-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl text-xs font-semibold flex items-center justify-center gap-1"
+                          >
+                            <Share2 size={14} /> Share
+                          </button>
+                          <button 
+                            onClick={() => deleteTicket(ticket.id)}
+                            className="py-2 px-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-xs font-semibold flex items-center justify-center gap-1"
+                          >
+                            <Trash2 size={14} /> Hapus
+                          </button>
+                        </div>
+
+                        {/* Additional Info */}
+                        {ticket.gate && (
+                          <div className="mt-3 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-xl text-center">
+                            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Gate: </span>
+                            <span className="text-lg font-bold text-amber-700 dark:text-amber-300">{ticket.gate}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               );

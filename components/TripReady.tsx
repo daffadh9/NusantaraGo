@@ -5,7 +5,8 @@ import { generateTripReadyChecklist } from '../services/geminiService';
 import { 
   Briefcase, CloudSun, Users, Bus, 
   MessageSquareQuote, Sparkles, Loader2, 
-  CheckCircle2, ArrowRight, Plane, Ship, Train, Car, Bike, Sun, CloudRain, ThermometerSnowflake, Palmtree, Download, Share2, Instagram, HardDrive
+  CheckCircle2, ArrowRight, Plane, Ship, Train, Car, Bike, Sun, CloudRain, ThermometerSnowflake, Palmtree, Download, Share2, Instagram, HardDrive,
+  Plus, X, GripVertical, StickyNote, Save, BookmarkCheck
 } from 'lucide-react';
 
 const TripReady: React.FC = () => {
@@ -16,6 +17,15 @@ const TripReady: React.FC = () => {
   
   // Checklist State Management
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  
+  // Custom Packing Items
+  const [customItems, setCustomItems] = useState<{id: string; item: string; checked: boolean}[]>([]);
+  const [newCustomItem, setNewCustomItem] = useState('');
+  
+  // Memo & Notes
+  const [tripMemo, setTripMemo] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const [input, setInput] = useState<TripReadyInput>({
     destination: '',
@@ -66,6 +76,36 @@ const TripReady: React.FC = () => {
       ...prev,
       [key]: !prev[key]
     }));
+  };
+
+  // Custom Item Functions
+  const addCustomItem = () => {
+    if (!newCustomItem.trim()) return;
+    setCustomItems(prev => [
+      ...prev,
+      { id: `custom-${Date.now()}`, item: newCustomItem.trim(), checked: false }
+    ]);
+    setNewCustomItem('');
+  };
+
+  const toggleCustomItem = (id: string) => {
+    setCustomItems(prev => prev.map(item => 
+      item.id === id ? { ...item, checked: !item.checked } : item
+    ));
+  };
+
+  const removeCustomItem = (id: string) => {
+    setCustomItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  // Save Checklist to Profile (Mock)
+  const handleSaveChecklist = async () => {
+    setIsSaving(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setSaveSuccess(true);
+    setIsSaving(false);
+    setTimeout(() => setSaveSuccess(false), 3000);
   };
 
   const renderIcon = (type: string) => {
@@ -190,6 +230,7 @@ const TripReady: React.FC = () => {
           <div className="bg-white dark:bg-dark-card p-6 md:p-8 rounded-3xl border border-slate-200 dark:border-dark-border shadow-sm">
             <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-2">
               <Users className="text-indigo-500" /> Tentang Kamu
+              <span className="text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full ml-2">(optional)</span>
             </h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Bantu AI memahami preferensimu lebih baik</p>
             
@@ -259,7 +300,10 @@ const TripReady: React.FC = () => {
 
             {/* Special Needs Tags */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Kebutuhan Khusus (Pilih yang sesuai)</label>
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+                Kebutuhan Khusus 
+                <span className="text-slate-400 dark:text-slate-500 font-normal ml-1">(optional)</span>
+              </label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { id: 'baby', label: '👶 Bawa Bayi/Balita' },
@@ -287,6 +331,23 @@ const TripReady: React.FC = () => {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Custom Kebutuhan Lainnya Field */}
+            <div className="space-y-2 mt-6">
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">
+                Kebutuhan Lainnya 
+                <span className="text-slate-400 dark:text-slate-500 font-normal ml-1">(optional)</span>
+              </label>
+              <textarea 
+                placeholder="Contoh: Butuh kursi roda di bandara, alergi kacang, bawa kamera drone, dll..."
+                className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-medium text-sm text-slate-800 dark:text-white placeholder-slate-400 resize-none h-24"
+                value={input.personalNotes}
+                onChange={e => setInput({...input, personalNotes: e.target.value})}
+              />
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                Tulis kebutuhan spesifik yang tidak ada di atas. AI akan menyesuaikan rekomendasi untukmu.
+              </p>
             </div>
           </div>
 
@@ -426,6 +487,122 @@ const TripReady: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Custom Packing Items Section */}
+        <div className="mt-8 bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-6 py-4 flex justify-between items-center">
+            <h3 className="font-bold text-white flex items-center gap-2">
+              <Plus size={18} /> Barang Tambahan (Custom)
+            </h3>
+            <span className="text-xs font-bold bg-white/20 backdrop-blur px-2 py-1 rounded-md text-white">
+              {customItems.length} Items
+            </span>
+          </div>
+          
+          {/* Add Custom Item Input */}
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Tambah barang custom (contoh: Kamera DSLR)"
+                value={newCustomItem}
+                onChange={(e) => setNewCustomItem(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && addCustomItem()}
+                className="flex-1 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-violet-500 focus:outline-none text-sm font-medium text-slate-800 dark:text-white placeholder-slate-400"
+              />
+              <button
+                onClick={addCustomItem}
+                disabled={!newCustomItem.trim()}
+                className="px-4 py-3 bg-violet-600 hover:bg-violet-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm transition-colors flex items-center gap-2"
+              >
+                <Plus size={18} /> Tambah
+              </button>
+            </div>
+          </div>
+          
+          {/* Custom Items List */}
+          {customItems.length > 0 ? (
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+              {customItems.map((item) => (
+                <div 
+                  key={item.id}
+                  className={`p-4 flex items-center gap-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800 ${item.checked ? 'bg-slate-50/50 dark:bg-slate-800/50' : ''}`}
+                >
+                  <GripVertical size={18} className="text-slate-300 dark:text-slate-600 cursor-grab" />
+                  <div 
+                    onClick={() => toggleCustomItem(item.id)}
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 cursor-pointer transition-all ${
+                      item.checked ? 'bg-violet-500 border-violet-500' : 'border-slate-300 dark:border-slate-600'
+                    }`}
+                  >
+                    {item.checked && <CheckCircle2 size={14} className="text-white" />}
+                  </div>
+                  <span className={`flex-1 font-bold text-sm ${item.checked ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-200'}`}>
+                    {item.item}
+                  </span>
+                  <button
+                    onClick={() => removeCustomItem(item.id)}
+                    className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 text-center text-slate-400 dark:text-slate-500">
+              <Plus size={32} className="mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Belum ada barang custom. Tambahkan di atas!</p>
+            </div>
+          )}
+        </div>
+
+        {/* Trip Memo / Notes Section */}
+        <div className="mt-6 bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden shadow-sm">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+            <h3 className="font-bold text-white flex items-center gap-2">
+              <StickyNote size={18} /> Catatan Perjalanan (Memo)
+            </h3>
+          </div>
+          <div className="p-4">
+            <textarea
+              placeholder="Tulis catatan penting untuk tripmu di sini...&#10;Contoh: Jangan lupa beli oleh-oleh di Pasar Seni, booking makan malam jam 7, dll."
+              value={tripMemo}
+              onChange={(e) => setTripMemo(e.target.value)}
+              className="w-full h-32 px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-amber-500 focus:outline-none text-sm font-medium text-slate-800 dark:text-white placeholder-slate-400 resize-none"
+            />
+          </div>
+        </div>
+
+        {/* Save to Profile Button */}
+        <div className="mt-6 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 shadow-lg relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl -mr-10 -mt-10"></div>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <BookmarkCheck size={20} /> Simpan Checklist ke Profil
+              </h3>
+              <p className="text-emerald-100 text-sm mt-1">Simpan checklist ini ke profilmu. Bisa diakses kapan saja!</p>
+            </div>
+            <button
+              onClick={handleSaveChecklist}
+              disabled={isSaving}
+              className={`px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                saveSuccess 
+                  ? 'bg-white text-emerald-600' 
+                  : 'bg-white/20 hover:bg-white/30 text-white border border-white/30'
+              }`}
+            >
+              {isSaving ? (
+                <><Loader2 size={18} className="animate-spin" /> Menyimpan...</>
+              ) : saveSuccess ? (
+                <><CheckCircle2 size={18} /> Tersimpan!</>
+              ) : (
+                <><Save size={18} /> Simpan Sekarang</>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Export & Share Actions */}

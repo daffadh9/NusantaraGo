@@ -15,32 +15,36 @@ interface UsageIndicatorProps {
   userId: string;
   onUpgradeClick?: () => void;
   compact?: boolean;
+  refreshTrigger?: number; // Increment this to trigger refresh
 }
 
 const UsageIndicator: React.FC<UsageIndicatorProps> = ({ 
   userId, 
   onUpgradeClick,
-  compact = false 
+  compact = false,
+  refreshTrigger = 0
 }) => {
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchSubscription = async () => {
-      try {
-        const data = await getUserSubscription(userId);
-        setSubscription(data);
-      } catch (err) {
-        console.error('Error fetching subscription:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchSubscription = async () => {
+    try {
+      setLoading(true);
+      const data = await getUserSubscription(userId);
+      console.log('📊 UsageIndicator refreshed:', data.usage_count, '/', SUBSCRIPTION_PLANS[data.plan].features.aiItineraryLimit);
+      setSubscription(data);
+    } catch (err) {
+      console.error('Error fetching subscription:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (userId) {
       fetchSubscription();
     }
-  }, [userId]);
+  }, [userId, refreshTrigger]); // Re-fetch when refreshTrigger changes
 
   if (loading) {
     return (

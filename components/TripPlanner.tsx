@@ -9,6 +9,7 @@ interface TripPlannerProps {
   isLoading: boolean;
   userId?: string;
   onUpgradeClick?: () => void;
+  usageRefreshTrigger?: number; // Trigger to refresh usage indicator
 }
 
 const INTEREST_OPTIONS = [
@@ -17,7 +18,7 @@ const INTEREST_OPTIONS = [
   "Petualangan Ekstrem", "Seni & Kerajinan"
 ];
 
-const TripPlanner: React.FC<TripPlannerProps> = ({ onGenerate, isLoading, userId, onUpgradeClick }) => {
+const TripPlanner: React.FC<TripPlannerProps> = ({ onGenerate, isLoading, userId, onUpgradeClick, usageRefreshTrigger = 0 }) => {
   const [formData, setFormData] = useState<UserInput>({
     destination: '',
     duration: 3,
@@ -76,6 +77,7 @@ const TripPlanner: React.FC<TripPlannerProps> = ({ onGenerate, isLoading, userId
               userId={userId} 
               onUpgradeClick={onUpgradeClick}
               compact={false}
+              refreshTrigger={usageRefreshTrigger}
             />
           )}
         </div>

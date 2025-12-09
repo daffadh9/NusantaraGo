@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, MapPin, ChevronLeft, ChevronRight, BookOpen, X, Star, DollarSign, Info, Navigation2, Clock } from 'lucide-react';
 import { INDONESIA_PROVINCES, SAMPLE_DESTINATIONS } from '../data/indonesiaData';
 import { getAccurateDestinationImage } from '../data/destinationImageMap';
+import PlaceImage from './PlaceImage';
 
 interface Destination {
   name: string;
@@ -178,15 +179,18 @@ const TravelerLibrary: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredDestinations.map((dest, index) => (
             <div 
-              key={index} 
+              key={`${dest.name}-${dest.city}-${index}`} 
               onClick={() => setDetailView(dest)}
               className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer shadow-lg border border-slate-200 dark:border-slate-700 transition-all hover:shadow-2xl hover:scale-[1.02]"
             >
-              <img 
-                src={getDestinationImage(dest.name, dest.category, index)}
-                alt={dest.name} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                onError={(e) => (e.currentTarget.src = 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=600&h=800')}
+              <PlaceImage
+                key={`img-${dest.name}-${dest.city}`}
+                placeName={`${dest.name} ${dest.city}`}
+                category={dest.category}
+                className="w-full h-full"
+                height={400}
+                fallbackCategory={dest.category.toLowerCase() || 'nature'}
+                showAttribution={true}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6">
                 <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-lg mb-2 w-fit border border-white/30">
@@ -236,11 +240,12 @@ const TravelerLibrary: React.FC = () => {
             
             {/* Image */}
             <div className="relative h-64">
-              <img
-                src={getDestinationImage(detailView.name, detailView.category, 0)}
-                alt={detailView.name}
-                className="w-full h-full object-cover"
-                onError={(e) => (e.currentTarget.src = 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=1200&h=600')}
+              <PlaceImage
+                placeName={`${detailView.name} ${detailView.city}`}
+                category={detailView.category}
+                className="w-full h-full"
+                height={256}
+                fallbackCategory={detailView.category || 'nature'}
               />
               <button
                 onClick={() => setDetailView(null)}

@@ -1,10 +1,42 @@
-# Environment Variables - NEVER COMMIT!
+# ============================================
+# NUSANTARAGO - GITIGNORE
+# ============================================
+
+# 🔐 ENVIRONMENT VARIABLES - CRITICAL! NEVER COMMIT!
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+.env.staging
+*.env
 
-# Logs
-logs
+# 🔑 API KEYS & SECRETS
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+.credentials
+service-account*.json
+google-credentials.json
+
+# 📦 DEPENDENCIES
+node_modules/
+.pnp
+.pnp.js
+
+# 🏗️ BUILD OUTPUT
+dist/
+dist-ssr/
+build/
+.next/
+out/
+*.local
+
+# 📝 LOGS
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -12,18 +44,63 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# 🧪 TESTING
+coverage/
+.nyc_output/
 
-# Editor directories and files
+# 💾 CACHE
+.cache/
+.parcel-cache/
+.turbo/
+*.tsbuildinfo
+
+# 🖥️ IDE/EDITOR
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*.swn
+
+# 💻 OS FILES
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# 📱 MOBILE/PLATFORM
+*.apk
+*.aab
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# 🔧 MISC
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+.vercel
+.netlify
+
+# 📊 ANALYTICS/MONITORING (if any local configs)
+.sentryclirc
+
+# ⚠️ SUPABASE LOCAL
+supabase/.branches
+supabase/.temp
+.supabase/
+
+# 🚨 SENSITIVE FILES - NEVER COMMIT!
+**/Access Token*.txt
+**/token*.txt
+**/deploy*.txt
+**/*secret*.txt
+**/*credential*.txt

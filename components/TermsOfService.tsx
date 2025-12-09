@@ -171,8 +171,9 @@ const TermsOfService: React.FC<TermsOfServiceProps> = ({ onBack }) => {
                 Pertanyaan tentang Syarat dan Ketentuan? Hubungi kami:
               </p>
               <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mt-3">
-                <p className="text-slate-700 dark:text-slate-200 font-semibold">Email: legal@nusantarago.id</p>
-                <p className="text-slate-700 dark:text-slate-200 font-semibold">Website: https://nusantarago.id</p>
+                <p className="text-slate-700 dark:text-slate-200 font-semibold">📧 Email: support@nusantarago.id</p>
+                <p className="text-slate-700 dark:text-slate-200 font-semibold">🌐 Website: https://nusantarago.id</p>
+                <p className="text-slate-700 dark:text-slate-200 font-semibold">🏢 PT NusantaraGo Teknologi Indonesia</p>
               </div>
             </section>
           </div>
