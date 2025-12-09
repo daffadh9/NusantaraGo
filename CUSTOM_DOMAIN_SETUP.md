@@ -266,18 +266,18 @@ https://www.nusantarago.com
 
 Keep localhost for development:
 ```env
-VITE_API_KEY=AIzaSyAonAgzN30j3PqKRRvEoDnhL1XhWC3y7Zk
-VITE_SUPABASE_URL=https://hjmgoppcbqnxciqyixdf.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_API_KEY=your_gemini_api_key_here
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 ### Add .env.production (Production)
 
 Create new file for production:
 ```env
-VITE_API_KEY=AIzaSyAonAgzN30j3PqKRRvEoDnhL1XhWC3y7Zk
-VITE_SUPABASE_URL=https://hjmgoppcbqnxciqyixdf.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_API_KEY=your_gemini_api_key_here
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 **Note:** Supabase URL stays the same! Custom domain only for auth callback.

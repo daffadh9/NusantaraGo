@@ -149,7 +149,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 - **Website**: [nusantarago.id](https://nusantarago.id)
 - **Email**: support@nusantarago.id
-- **Creator**: Daffa Mahardhika
+- **Creator**: Daffa Dhiyaulhaq Khadafi
 
 ---
 

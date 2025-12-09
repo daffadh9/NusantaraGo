@@ -133,11 +133,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 ```env
 # Gemini API (existing)
-VITE_API_KEY=AIzaSyAonAgzN30j3PqKRRvEoDnhL1XhWC3y7Zk
+VITE_API_KEY=your_gemini_api_key_here
 
 # Supabase (NEW)
-VITE_SUPABASE_URL=https://xxxxxxxxxxxxxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key_here
 ```
 
 ---

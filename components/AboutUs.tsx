@@ -41,7 +41,7 @@ const AboutUs: React.FC = () => {
   ];
 
   const team = [
-    { name: 'Daffa Mahardhika', role: 'Founder & CEO', avatar: '👨‍💼' },
+    { name: 'Daffa Dhiyaulhaq Khadafi', role: 'Founder & CEO', avatar: '👨‍💼' },
     { name: 'Tim Engineering', role: 'Product Development', avatar: '👨‍💻' },
     { name: 'Tim AI/ML', role: 'AI Research', avatar: '🤖' },
     { name: 'Tim Content', role: 'Destination Curation', avatar: '✍️' }
