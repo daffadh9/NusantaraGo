@@ -1,0 +1,28 @@
+{
+  "name": "NusantaraGo - Jelajah Nusantara dengan AI",
+  "short_name": "NusantaraGo",
+  "description": "AI-Powered Travel Companion untuk Indonesia. 17,000+ destinasi!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#10B981",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "id",
+  "icons": [
+    {
+      "src": "/logo-unified.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-unified.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["travel", "lifestyle", "utilities"],
+  "prefer_related_applications": false
+}
