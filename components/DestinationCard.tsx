@@ -38,6 +38,17 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
     ? 'from-blue-500 to-cyan-500' 
     : 'from-amber-500 to-orange-500';
 
+  // Map internal category to fallback category keywords
+  const fallbackCategory = props.category === 'beach'
+    ? 'beach'
+    : props.category === 'nature'
+    ? 'nature'
+    : props.category === 'culinary'
+    ? 'food'
+    : props.category === 'culture'
+    ? 'culture'
+    : 'default';
+
   return (
     <motion.div 
       whileHover={{ scale: 1.02, y: -8 }}
@@ -53,8 +64,9 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
           className="w-full h-full"
         >
           <PlaceImage
-            placeName={`${props.title} ${props.city}`}
+            placeName={props.title}
             category={props.category}
+            fallbackCategory={fallbackCategory}
             className="w-full h-full"
           />
         </motion.div>
