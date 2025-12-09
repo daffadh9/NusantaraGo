@@ -54,6 +54,7 @@ import DestinationCard from './DestinationCard';
 import ContextualHero from './ContextualHero';
 import ScrollReveal from './ScrollReveal';
 import DestinationDetailView from './DestinationDetailView';
+import HorizontalScroll from './HorizontalScroll';
 import { AI_RECOMMENDED_DESTINATIONS } from '../data/aiDestinationData';
 import { DESTINATIONS_BY_CATEGORY, ALL_DESTINATIONS } from '../data/expandedDestinations';
 import { cn } from '../lib/utils';
@@ -650,7 +651,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                           </button>
                        </div>
                        
-                       <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                       <HorizontalScroll>
                          {DESTINATIONS_BY_CATEGORY['hidden-gems'].map((dest, index) => (
                            <DestinationCard
                              key={dest.id}
@@ -661,7 +662,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                              }}
                            />
                          ))}
-                       </div>
+                       </HorizontalScroll>
                      </div>
                    </ScrollReveal>
 
@@ -684,7 +685,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                           </button>
                        </div>
                        
-                       <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                       <HorizontalScroll>
                          {DESTINATIONS_BY_CATEGORY['beach'].map((dest, index) => (
                            <DestinationCard
                              key={dest.id}
@@ -695,7 +696,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                              }}
                            />
                          ))}
-                       </div>
+                       </HorizontalScroll>
                      </div>
                    </ScrollReveal>
 
@@ -718,7 +719,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                           </button>
                        </div>
                        
-                       <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory scroll-smooth">
+                       <HorizontalScroll>
                          {DESTINATIONS_BY_CATEGORY['culinary'].map((dest, index) => (
                            <DestinationCard
                              key={dest.id}
@@ -729,7 +730,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                              }}
                            />
                          ))}
-                       </div>
+                       </HorizontalScroll>
                      </div>
                    </ScrollReveal>
                  </>

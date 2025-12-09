@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Clock, MapPin, Wallet, Sparkles, Heart, Bookmark, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import PlaceImage from './PlaceImage';
 import { cn } from '../lib/utils';
+import { DESTINATION_IMAGE_MAP } from '../data/destinationImageMap';
 
 export interface DestinationCardProps {
   id: string | number;
@@ -17,6 +17,7 @@ export interface DestinationCardProps {
   priceTier: string;
   crowdLevel: 'low' | 'medium' | 'high';
   category?: string;
+  image?: string;
   onClick?: () => void;
 }
 
@@ -51,10 +52,11 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
           transition={{ duration: 0.6 }}
           className="w-full h-full"
         >
-          <PlaceImage 
-            placeName={`${props.title} ${props.city}`} 
-            category={props.category} 
-            className="w-full h-full" 
+          <img
+            src={props.image || DESTINATION_IMAGE_MAP[props.title] || DESTINATION_IMAGE_MAP[props.city] || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800'}
+            alt={props.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
           />
         </motion.div>
         {/* Dark overlay */}
@@ -128,7 +130,7 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
           </p>
 
           {/* AI Insight - Reveal on Hover */}
-          <div className="overflow-hidden transition-all duration-500 max-h-0 opacity-0 group-hover:max-h-32 group-hover:opacity-100">
+          <div className="overflow-hidden transition-all duration-500 max-h-0 opacity-0 group-hover:max-h-32 group-hover:opacity-100 mb-3">
             {/* AI Insight Box */}
             <div className="mb-3 p-3 bg-emerald-500/10 backdrop-blur-sm rounded-lg border border-emerald-500/20">
               <div className="flex items-start gap-2">
@@ -138,7 +140,7 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
             </div>
             
             {/* Meta Info Row */}
-            <div className="flex items-center gap-4 text-xs text-slate-400 mb-3">
+            <div className="flex items-center gap-4 text-xs text-slate-400">
               <span className="flex items-center gap-1.5">
                 <Clock size={12} className="text-slate-500" />
                 {props.openHours}
@@ -152,21 +154,21 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
                 {props.priceTier}
               </span>
             </div>
-
-            {/* CTA Button "Saya Kepo" */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={(e) => {
-                e.stopPropagation();
-                props.onClick?.();
-              }}
-              className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-500/80 to-teal-500/80 hover:from-emerald-500 hover:to-teal-500 backdrop-blur-md rounded-lg font-bold text-sm text-white shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 flex items-center justify-center gap-2"
-            >
-              <Sparkles size={16} className="animate-pulse" />
-              Saya Kepo!
-            </motion.button>
           </div>
+
+          {/* CTA Button "Saya Kepo" - ALWAYS VISIBLE */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              props.onClick?.();
+            }}
+            className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-xl font-bold text-sm text-white shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <Sparkles size={18} className="animate-pulse" />
+            Saya Kepo!
+          </motion.button>
         </div>
       </div>
     </motion.div>
