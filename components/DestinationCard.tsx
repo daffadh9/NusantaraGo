@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Clock, MapPin, Wallet, Sparkles, Heart, Bookmark, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PlaceImage from './PlaceImage';
 import { cn } from '../lib/utils';
-import { DESTINATION_IMAGE_MAP } from '../data/destinationImageMap';
 
 export interface DestinationCardProps {
   id: string | number;
@@ -52,11 +52,10 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
           transition={{ duration: 0.6 }}
           className="w-full h-full"
         >
-          <img
-            src={props.image || DESTINATION_IMAGE_MAP[props.title] || DESTINATION_IMAGE_MAP[props.city] || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800'}
-            alt={props.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
+          <PlaceImage
+            placeName={`${props.title} ${props.city}`}
+            category={props.category}
+            className="w-full h-full"
           />
         </motion.div>
         {/* Dark overlay */}
