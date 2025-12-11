@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Clock, MapPin, Wallet, Sparkles, Heart, Bookmark, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import PlaceImage from './PlaceImage';
 import { cn } from '../lib/utils';
+import { getAccurateDestinationImage } from '../data/destinationImageMap';
 
 export interface DestinationCardProps {
   id: string | number;
@@ -38,16 +38,11 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
     ? 'from-blue-500 to-cyan-500' 
     : 'from-amber-500 to-orange-500';
 
-  // Map internal category to fallback category keywords
-  const fallbackCategory = props.category === 'beach'
-    ? 'beach'
-    : props.category === 'nature'
-    ? 'nature'
-    : props.category === 'culinary'
-    ? 'food'
-    : props.category === 'culture'
-    ? 'culture'
-    : 'default';
+  // Deterministic curated image based on destination title + high-level category
+  const imageUrl = getAccurateDestinationImage(
+    props.title,
+    props.category || ''
+  );
 
   return (
     <motion.div 
@@ -56,18 +51,18 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
       className="group relative aspect-[3/4] min-w-[300px] rounded-2xl overflow-hidden cursor-pointer shadow-xl hover:shadow-2xl snap-center shrink-0"
       onClick={props.onClick}
     >
-      {/* Background Image with Zoom on Hover */}
+      {/* Background Image with Zoom on Hover (curated & deterministic) */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.6 }}
           className="w-full h-full"
         >
-          <PlaceImage
-            placeName={props.title}
-            category={props.category}
-            fallbackCategory={fallbackCategory}
-            className="w-full h-full"
+          <img
+            src={imageUrl}
+            alt={props.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
           />
         </motion.div>
         {/* Dark overlay */}

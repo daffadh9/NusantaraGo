@@ -123,6 +123,29 @@ const detectCategory = (name: string): string => {
   return 'default';
 };
 
+// Normalize various category labels (Indonesian + English) into a small set
+// used by our curated image buckets.
+const normalizeCategory = (rawCategory: string | undefined, name: string): string => {
+  const detected = detectCategory(name);
+  if (!rawCategory) return detected;
+
+  const c = rawCategory.toLowerCase().trim();
+
+  if (['alam', 'nature', 'outdoor'].includes(c)) return 'Alam';
+  if (['pantai', 'beach', 'sea', 'coast', 'island'].includes(c)) return 'Pantai';
+  if (['budaya', 'culture', 'lifestyle', 'city'].includes(c)) return 'Budaya';
+  if (['sejarah', 'heritage', 'history', 'historical', 'landmark'].includes(c)) return 'Sejarah';
+  if (['kuliner', 'culinary', 'food'].includes(c)) return 'Kuliner';
+  if (['gunung', 'mountain', 'volcano', 'hiking'].includes(c)) return 'Gunung';
+
+  // High-level buckets from Dashboard/AI data – let name-based detection decide
+  if (['instagram', 'instagramable', 'instagrammable', 'hidden-gems', 'hidden', 'family', 'adventure'].includes(c)) {
+    return detected;
+  }
+
+  return detected;
+};
+
 /**
  * Get accurate destination image by name
  * Falls back to category-based image if exact match not found
@@ -144,9 +167,8 @@ export const getAccurateDestinationImage = (
     }
   }
   
-  // Smart fallback by detected category (no unreliable external API)
-  const detectedCat = detectCategory(destinationName);
-  const finalCategory = category || detectedCat;
+  // Smart fallback by normalized category (supports Indonesian + English labels)
+  const finalCategory = normalizeCategory(category, destinationName);
   
   const categoryImages: Record<string, string> = {
     'Alam': 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',

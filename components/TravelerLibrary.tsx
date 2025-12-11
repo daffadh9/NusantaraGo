@@ -3,7 +3,6 @@ import React, { useState, useMemo } from 'react';
 import { Search, MapPin, ChevronLeft, ChevronRight, BookOpen, X, Star, DollarSign, Info, Navigation2, Clock } from 'lucide-react';
 import { INDONESIA_PROVINCES, SAMPLE_DESTINATIONS } from '../data/indonesiaData';
 import { getAccurateDestinationImage } from '../data/destinationImageMap';
-import PlaceImage from './PlaceImage';
 
 interface Destination {
   name: string;
@@ -183,14 +182,11 @@ const TravelerLibrary: React.FC = () => {
               onClick={() => setDetailView(dest)}
               className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer shadow-lg border border-slate-200 dark:border-slate-700 transition-all hover:shadow-2xl hover:scale-[1.02]"
             >
-              <PlaceImage
-                key={`img-${dest.name}-${dest.city}`}
-                placeName={`${dest.name} ${dest.city}`}
-                category={dest.category}
-                className="w-full h-full"
-                height={400}
-                fallbackCategory={dest.category.toLowerCase() || 'nature'}
-                showAttribution={true}
+              <img
+                src={getDestinationImage(dest.name, dest.category, index)}
+                alt={`${dest.name} - ${dest.city}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-end p-6">
                 <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-lg mb-2 w-fit border border-white/30">
@@ -240,12 +236,11 @@ const TravelerLibrary: React.FC = () => {
             
             {/* Image */}
             <div className="relative h-64">
-              <PlaceImage
-                placeName={`${detailView.name} ${detailView.city}`}
-                category={detailView.category}
-                className="w-full h-full"
-                height={256}
-                fallbackCategory={detailView.category || 'nature'}
+              <img
+                src={getDestinationImage(detailView.name, detailView.category, 0)}
+                alt={`${detailView.name} - ${detailView.city}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
               />
               <button
                 onClick={() => setDetailView(null)}

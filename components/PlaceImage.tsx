@@ -42,7 +42,8 @@ const PlaceImage: React.FC<PlaceImageProps> = ({
       
       try {
         // Use the intelligent photo service (Edge Function + cache + curated)
-        const result = await getPlacePhoto(destName, 800, fallbackCategory);
+        // Do NOT pass category here so internal logic can auto-detect category
+        const result = await getPlacePhoto(destName, 800);
         
         if (cancelled) return;
         
