@@ -42,6 +42,7 @@ import TripMovieMaker from './TripMovieMaker';
 import ARHeritageTour from './ARHeritageTour';
 import TravelNowPayLater from './TravelNowPayLater';
 import AIVoiceAssistant from './AIVoiceAssistant';
+import Marketplace from './Marketplace';
 
 // Premium Features (Dec 2024)
 import SmartPriceAlert from './SmartPriceAlert';
@@ -225,6 +226,8 @@ const Dashboard: React.FC<DashboardProps> = ({
         { id: 'monetization', label: 'Cuan & Rewards', icon: <Gift size={20} /> },
         { id: 'local_deals', label: 'Local Deals', icon: <DollarSign size={20} /> },
         { id: 'quests', label: 'Travel Quest', icon: <Star size={20} /> },
+        { id: 'marketplace', label: 'Marketplace', icon: <DollarSign size={20} /> },
+        { id: 'settings', label: 'Pengaturan', icon: <SettingsIcon size={20} /> },
       ]
     }
   ];
@@ -772,6 +775,7 @@ const Dashboard: React.FC<DashboardProps> = ({
           {activeView === 'ar_heritage' && <ARHeritageTour userId={user.id} />}
           {activeView === 'bnpl' && <TravelNowPayLater userId={user.id} />}
           {activeView === 'voice_ai' && <AIVoiceAssistant userId={user.id} />}
+          {activeView === 'marketplace' && <Marketplace userId={user.id} />}
           
           {/* Premium Features (Dec 2024) */}
           {activeView === 'price_alert' && <SmartPriceAlert />}

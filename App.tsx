@@ -69,31 +69,7 @@ const App: React.FC = () => {
         // Dynamic import to get supabase client
         const { supabase } = await import('./lib/supabaseClient');
         
-        // Check URL for OAuth callback (handles hash fragment)
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        const refreshToken = hashParams.get('refresh_token');
-        
-        if (accessToken && refreshToken) {
-          console.log('🔄 OAuth callback detected with tokens, setting session...');
-          
-          // Set the session from URL tokens
-          const { data, error } = await supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: refreshToken
-          });
-          
-          if (error) {
-            console.error('❌ Error setting session:', error);
-          } else if (data.session) {
-            console.log('✅ Session set successfully:', data.session.user?.email);
-          }
-          
-          // Clear the hash from URL
-          window.history.replaceState(null, '', window.location.pathname);
-        }
-        
-        // Now get current session
+        // Check for session immediately
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
@@ -117,6 +93,30 @@ const App: React.FC = () => {
             avatar_url: user.user_metadata.avatar_url
           });
           setViewState('dashboard');
+        } else {
+          // If no session found via getSession, check if we need to handle hash manually as fallback
+          // (Only if getSession missed it, which is rare but can happen if client initialized late)
+          const hashParams = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          
+          if (accessToken && refreshToken) {
+            console.log('🔄 OAuth callback detected manually, attempting to set session...');
+            const { data, error } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken
+            });
+            
+            if (error) {
+              console.error('❌ Error manually setting session:', error);
+            } else if (data.session?.user) {
+              console.log('✅ Session set manually:', data.session.user.email);
+              // State will be updated by onAuthStateChange listener
+            }
+            
+            // Clean URL
+            window.history.replaceState(null, '', window.location.pathname);
+          }
         }
         
         setIsAuthLoading(false);
@@ -456,7 +456,10 @@ const App: React.FC = () => {
       )}
 
       {viewState === 'landing' && (
-        <LandingPage onGetStarted={() => setViewState('auth')} />
+        <LandingPage 
+          onGetStarted={() => setViewState('auth')} 
+          onAffiliate={() => setViewState('affiliate')}
+        />
       )}
 
       {viewState === 'auth' && (
@@ -511,7 +514,12 @@ const App: React.FC = () => {
       {viewState === 'terms' && <TermsOfService onBack={() => setViewState('landing')} />}
       {viewState === 'cookie' && <CookiePolicy />}
       {viewState === 'gdpr' && <GDPRCompliance />}
-      {viewState === 'affiliate' && <AffiliateLanding />}
+      {viewState === 'affiliate' && (
+        <AffiliateLanding 
+          onJoin={() => setViewState('auth')} 
+          onBack={() => setViewState('landing')} 
+        />
+      )}
 
       {/* Scroll to Top Button */}
       <ScrollToTopButton />

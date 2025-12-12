@@ -1037,7 +1037,7 @@ const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   </li>
                 ))}
               </ul>
-              <button onClick={onGetStarted} className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
+              <button onClick={onAffiliate} className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
                 Daftar Affiliate Gratis
               </button>
             </div>

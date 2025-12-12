@@ -102,11 +102,185 @@ export const DESTINATION_IMAGE_MAP: Record<string, string> = {
   'Labuan Bajo': 'https://images.pexels.com/photos/1680140/pexels-photo-1680140.jpeg?auto=compress&cs=tinysrgb&w=800',
   'Pink Beach': 'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=800',
   
+  // ========== HIDDEN GEMS & EXPANDED DESTINATIONS ==========
+  'Air Terjun Madakaripura': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Waterfall
+  'Madakaripura': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800',
+  'Pantai Tanjung Papuma': 'https://images.unsplash.com/photo-1510137600163-2729bc6959a6?w=800', // Rocky beach
+  'Tanjung Papuma': 'https://images.unsplash.com/photo-1510137600163-2729bc6959a6?w=800',
+  'Kampung Warna Warni': 'https://images.unsplash.com/photo-1564750976378-272e06732dc6?w=800', // Colorful houses
+  'Jodipan': 'https://images.unsplash.com/photo-1564750976378-272e06732dc6?w=800',
+  'Curug Cimahi': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Waterfall in forest
+  'Rainbow Waterfall': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800',
+  'Desa Penglipuran': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800', // Traditional village
+  'Penglipuran': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800',
+  'Pulau Menjangan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800', // Diving/snorkeling
+  'Menjangan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800',
+  'Danau Weekuri': 'https://images.unsplash.com/photo-1623947159786-2c752427a7c7?w=800', // Sumba lake
+  'Weekuri': 'https://images.unsplash.com/photo-1623947159786-2c752427a7c7?w=800',
+  'Bukit Belong': 'https://images.unsplash.com/photo-1505993597083-3bd19fb75e57?w=800', // Green hills
+  'Kampung Bena': 'https://images.unsplash.com/photo-1558276537-25368a0a3243?w=800', // Megalithic village
+  
+  // Nature
+  'Taman Nasional Kutai': 'https://images.unsplash.com/photo-1582236834927-4a7424d67347?w=800', // Jungle
+  'Tanjung Puting': 'https://images.unsplash.com/photo-1582236834927-4a7424d67347?w=800', // Orangutan/Jungle
+  'Pulau Padar': 'https://images.unsplash.com/photo-1539656206336-94b7b777779f?w=800', // Padar Island view
+  'Air Terjun Tumpak Sewu': 'https://images.unsplash.com/photo-1565118531796-7a33e2183b32?w=800', // Tumpak Sewu
+  'Tumpak Sewu': 'https://images.unsplash.com/photo-1565118531796-7a33e2183b32?w=800',
+  
+  // Beach
+  'Pantai Ora': 'https://images.unsplash.com/photo-1590523278135-1e998c84f74d?w=800', // Clear water
+  'Pulau Weh': 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800', // Island view
+  'Pulau Belitung': 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800', // Granite rocks
+  'Pantai Kuta Lombok': 'https://images.unsplash.com/photo-1572535068436-7cb2b6727276?w=800', // Lombok beach
+  'Pantai Nihiwatu': 'https://images.unsplash.com/photo-1502208327471-d5dde4d78995?w=800', // Luxury beach
+  'Pulau Pahawang': 'https://images.unsplash.com/photo-1506953823976-52e1fdc0149b?w=800', // Island
+  
+  // Culinary
+  'Warung Mak Beng': 'https://images.unsplash.com/photo-1551326844-f450ed697f07?w=800', // Fish soup/Indonesian food
+  'Gudeg Yu Djum': 'https://images.unsplash.com/photo-1606216507787-792da8223c6f?w=800', // Gudeg
+  'Babi Guling Candra': 'https://images.unsplash.com/photo-1541703052002-9ae723425cb7?w=800', // Balinese food
+  'Soto Ayam Lamongan Cak Har': 'https://images.unsplash.com/photo-1603083547806-a6984e098824?w=800', // Soto
+  'Bebek Tepi Sawah': 'https://images.unsplash.com/photo-1568487737237-772922dd5505?w=800', // Duck/Rice field view
+  'Bakso President': 'https://images.unsplash.com/photo-1529563021898-e74c2ae74557?w=800', // Bakso
+  'Nasi Padang Sederhana': 'https://images.unsplash.com/photo-1592751722763-7c55c327c19c?w=800', // Nasi Padang
+  'Seafood Jimbaran': 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', // Seafood beach
+  'Coto Makassar Nusantara': 'https://images.unsplash.com/photo-1603083547806-a6984e098824?w=800', // Coto
+  'Mie Aceh Titi Bobrok': 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=800', // Spicy noodles
+  
+  // Culture
+  'Toraja Land': 'https://images.unsplash.com/photo-1628062128782-272e06732dc6?w=800', // Tongkonan
+  'Desa Adat Wae Rebo': 'https://images.unsplash.com/photo-1558276537-25368a0a3243?w=800', // Wae Rebo
+  'Museum Angkut': 'https://images.unsplash.com/photo-1596726653697-d65e7cb86377?w=800', // Classic cars
+  'Kampung Naga': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Traditional village
+  'Pura Ulun Danu': 'https://images.unsplash.com/photo-1558276537-25368a0a3243?w=800', // Lake temple
+  
+  // Instagram
+  'Pinus Pengger': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Pine forest
+  'Bukit Teletubbies': 'https://images.unsplash.com/photo-1505993597083-3bd19fb75e57?w=800', // Hills
+  'Bali Swing': 'https://images.unsplash.com/photo-1578409760928-91924170cb81?w=800', // Swing
+  'Dago Dreampark': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Park
+  'Batu Secret Zoo': 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=800', // Zoo
+  'Tebing Koja': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Cliff
+  'Rumah Hobbit': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800', // Hobbit house
+  'Cinta Island': 'https://images.unsplash.com/photo-1590523278135-1e998c84f74d?w=800', // Island
+  'Floating Market Lembang': 'https://images.unsplash.com/photo-1564750976378-272e06732dc6?w=800', // Market
+  'Gates of Heaven': 'https://images.unsplash.com/photo-1592395627727-6b3a0a32177d?w=800', // Lempuyang
+  
+  // Adventure
+  'Paragliding Batu': 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?w=800', // Paragliding
+  'Rafting Sungai Ayung': 'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=800', // Rafting
+  'Canyoning Green Canyon': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Water
+  'Sandboarding Gumuk Pasir': 'https://images.unsplash.com/photo-1502208327471-d5dde4d78995?w=800', // Sand dunes
+  'Via Ferrata Gua Pindul': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Cave
+  'Zip Line Lembah Harau': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Nature
+  'ATV Merapi': 'https://images.unsplash.com/photo-1592837583728-6677c772c721?w=800', // ATV
+  'Cliff Jumping Nusa Ceningan': 'https://images.unsplash.com/photo-1502208327471-d5dde4d78995?w=800', // Jumping
+  'Jelajah Gua Lawa': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Cave
+  'Snorkeling Pulau Menjangan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800', // Underwater
+  
+  // Family
+  'Jatim Park 1': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Theme park
+  'Trans Studio Bandung': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Indoor park
+  'Taman Safari Bogor': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', // Safari
+  'Dufan Ancol': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Theme park
+  'Farmhouse Lembang': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800', // Farmhouse
+  'Bali Safari Park': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', // Safari
+  'Pantai Sanur': 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800', // Beach
+  'Museum Satwa': 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=800', // Animals
+  'Kidzania Jakarta': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Kids
+  
   // DKI Jakarta
   'Monas': 'https://images.pexels.com/photos/2161467/pexels-photo-2161467.jpeg?auto=compress&cs=tinysrgb&w=800',
   'Kota Tua Jakarta': 'https://images.pexels.com/photos/3185480/pexels-photo-3185480.jpeg?auto=compress&cs=tinysrgb&w=800',
   'Ancol': 'https://images.pexels.com/photos/1680140/pexels-photo-1680140.jpeg?auto=compress&cs=tinysrgb&w=800',
   'Taman Mini Indonesia Indah': 'https://images.pexels.com/photos/2161467/pexels-photo-2161467.jpeg?auto=compress&cs=tinysrgb&w=800',
+
+  // ========== HIDDEN GEMS & EXPANDED DESTINATIONS ==========
+  'Air Terjun Madakaripura': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Waterfall
+  'Madakaripura': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800',
+  'Pantai Tanjung Papuma': 'https://images.unsplash.com/photo-1510137600163-2729bc6959a6?w=800', // Rocky beach
+  'Tanjung Papuma': 'https://images.unsplash.com/photo-1510137600163-2729bc6959a6?w=800',
+  'Kampung Warna Warni': 'https://images.unsplash.com/photo-1564750976378-272e06732dc6?w=800', // Colorful houses
+  'Jodipan': 'https://images.unsplash.com/photo-1564750976378-272e06732dc6?w=800',
+  'Curug Cimahi': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Waterfall in forest
+  'Rainbow Waterfall': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800',
+  'Desa Penglipuran': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800', // Traditional village
+  'Penglipuran': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800',
+  'Pulau Menjangan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800', // Diving/snorkeling
+  'Menjangan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800',
+  'Danau Weekuri': 'https://images.unsplash.com/photo-1623947159786-2c752427a7c7?w=800', // Sumba lake
+  'Weekuri': 'https://images.unsplash.com/photo-1623947159786-2c752427a7c7?w=800',
+  'Bukit Belong': 'https://images.unsplash.com/photo-1505993597083-3bd19fb75e57?w=800', // Green hills
+  'Kampung Bena': 'https://images.unsplash.com/photo-1558276537-25368a0a3243?w=800', // Megalithic village
+  
+  // Nature
+  'Taman Nasional Kutai': 'https://images.unsplash.com/photo-1582236834927-4a7424d67347?w=800', // Jungle
+  'Tanjung Puting': 'https://images.unsplash.com/photo-1582236834927-4a7424d67347?w=800', // Orangutan/Jungle
+  'Pulau Padar': 'https://images.unsplash.com/photo-1539656206336-94b7b777779f?w=800', // Padar Island view
+  'Air Terjun Tumpak Sewu': 'https://images.unsplash.com/photo-1565118531796-7a33e2183b32?w=800', // Tumpak Sewu
+  'Tumpak Sewu': 'https://images.unsplash.com/photo-1565118531796-7a33e2183b32?w=800',
+  
+  // Beach
+  'Pantai Ora': 'https://images.unsplash.com/photo-1590523278135-1e998c84f74d?w=800', // Clear water
+  'Pulau Weh': 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?w=800', // Island view
+  'Pulau Belitung': 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?w=800', // Granite rocks
+  'Pantai Kuta Lombok': 'https://images.unsplash.com/photo-1572535068436-7cb2b6727276?w=800', // Lombok beach
+  'Pantai Nihiwatu': 'https://images.unsplash.com/photo-1502208327471-d5dde4d78995?w=800', // Luxury beach
+  'Pulau Pahawang': 'https://images.unsplash.com/photo-1506953823976-52e1fdc0149b?w=800', // Island
+  
+  // Culinary
+  'Warung Mak Beng': 'https://images.unsplash.com/photo-1551326844-f450ed697f07?w=800', // Fish soup/Indonesian food
+  'Gudeg Yu Djum': 'https://images.unsplash.com/photo-1606216507787-792da8223c6f?w=800', // Gudeg
+  'Babi Guling Candra': 'https://images.unsplash.com/photo-1541703052002-9ae723425cb7?w=800', // Balinese food
+  'Soto Ayam Lamongan Cak Har': 'https://images.unsplash.com/photo-1603083547806-a6984e098824?w=800', // Soto
+  'Bebek Tepi Sawah': 'https://images.unsplash.com/photo-1568487737237-772922dd5505?w=800', // Duck/Rice field view
+  'Bakso President': 'https://images.unsplash.com/photo-1529563021898-e74c2ae74557?w=800', // Bakso
+  'Nasi Padang Sederhana': 'https://images.unsplash.com/photo-1592751722763-7c55c327c19c?w=800', // Nasi Padang
+  'Seafood Jimbaran': 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800', // Seafood beach
+  'Coto Makassar Nusantara': 'https://images.unsplash.com/photo-1603083547806-a6984e098824?w=800', // Coto
+  'Mie Aceh Titi Bobrok': 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=800', // Spicy noodles
+  
+  // Culture
+  'Toraja Land': 'https://images.unsplash.com/photo-1628062128782-272e06732dc6?w=800', // Tongkonan
+  'Desa Adat Wae Rebo': 'https://images.unsplash.com/photo-1558276537-25368a0a3243?w=800', // Wae Rebo
+  'Museum Angkut': 'https://images.unsplash.com/photo-1596726653697-d65e7cb86377?w=800', // Classic cars
+  'Kampung Naga': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Traditional village
+  'Pura Ulun Danu': 'https://images.unsplash.com/photo-1558276537-25368a0a3243?w=800', // Lake temple
+  
+  // Instagram
+  'Pinus Pengger': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Pine forest
+  'Bukit Teletubbies': 'https://images.unsplash.com/photo-1505993597083-3bd19fb75e57?w=800', // Hills
+  'Bali Swing': 'https://images.unsplash.com/photo-1578409760928-91924170cb81?w=800', // Swing
+  'Dago Dreampark': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Park
+  'Batu Secret Zoo': 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=800', // Zoo
+  'Tebing Koja': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Cliff
+  'Rumah Hobbit': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800', // Hobbit house
+  'Cinta Island': 'https://images.unsplash.com/photo-1590523278135-1e998c84f74d?w=800', // Island
+  'Floating Market Lembang': 'https://images.unsplash.com/photo-1564750976378-272e06732dc6?w=800', // Market
+  'Gates of Heaven': 'https://images.unsplash.com/photo-1592395627727-6b3a0a32177d?w=800', // Lempuyang
+  
+  // Adventure
+  'Paragliding Batu': 'https://images.unsplash.com/photo-1476610182048-b716b8518aae?w=800', // Paragliding
+  'Rafting Sungai Ayung': 'https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=800', // Rafting
+  'Canyoning Green Canyon': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Water
+  'Sandboarding Gumuk Pasir': 'https://images.unsplash.com/photo-1502208327471-d5dde4d78995?w=800', // Sand dunes
+  'Via Ferrata Gua Pindul': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Cave
+  'Zip Line Lembah Harau': 'https://images.unsplash.com/photo-1627395682977-2b724776566c?w=800', // Nature
+  'ATV Merapi': 'https://images.unsplash.com/photo-1592837583728-6677c772c721?w=800', // ATV
+  'Cliff Jumping Nusa Ceningan': 'https://images.unsplash.com/photo-1502208327471-d5dde4d78995?w=800', // Jumping
+  'Jelajah Gua Lawa': 'https://images.unsplash.com/photo-1517480447813-92f3cb97a6e7?w=800', // Cave
+  'Snorkeling Pulau Menjangan': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800', // Underwater
+  
+  // Family
+  'Jatim Park 1': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Theme park
+  'Trans Studio Bandung': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Indoor park
+  'Taman Safari Bogor': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', // Safari
+  'Dufan Ancol': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Theme park
+  'Farmhouse Lembang': 'https://images.unsplash.com/photo-1597982467954-2c0697274da2?w=800', // Farmhouse
+  'Bali Safari Park': 'https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800', // Safari
+  'Pantai Sanur': 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?w=800', // Beach
+  'Museum Satwa': 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=800', // Animals
+  'Kidzania Jakarta': 'https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=800', // Kids
 };
 
 /**
