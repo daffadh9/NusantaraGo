@@ -22,7 +22,7 @@ const DIGITAL_PRODUCTS = [
     price: 'Rp 29.000',
     rating: 4.7,
     sales: 85,
-    image: 'https://images.unsplash.com/photo-1585976573738-469b27344c21?w=800&q=80',
+    image: 'https://images.pexels.com/photos/4350631/pexels-photo-4350631.jpeg?auto=compress&cs=tinysrgb&w=800',
     type: 'E-Book',
     tags: ['Jogja', 'Hidden Gems']
   },
@@ -33,7 +33,7 @@ const DIGITAL_PRODUCTS = [
     price: 'Rp 99.000',
     rating: 5.0,
     sales: 42,
-    image: 'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80',
+    image: 'https://images.pexels.com/photos/1680140/pexels-photo-1680140.jpeg?auto=compress&cs=tinysrgb&w=800',
     type: 'Interactive Map',
     tags: ['Labuan Bajo', 'Luxury']
   }
