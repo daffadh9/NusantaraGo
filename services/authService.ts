@@ -41,12 +41,19 @@ export const signInWithEmail = async (email: string, password: string) => {
 
 /**
  * Sign in dengan Google OAuth
+ * Fixed for mobile redirect - always redirect to root origin
  */
 export const signInWithGoogle = async () => {
-  // Get the correct redirect URL (works on mobile & desktop)
-  const redirectUrl = window.location.origin + window.location.pathname;
+  // IMPORTANT: Always use origin only (no pathname) for mobile compatibility
+  // Mobile browsers can have issues with complex redirect URLs
+  const redirectUrl = window.location.origin;
   
   console.log('🔐 Starting Google OAuth with redirect:', redirectUrl);
+  console.log('📱 User Agent:', navigator.userAgent);
+  
+  // Detect if mobile for logging
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  console.log('📱 Is Mobile:', isMobile);
   
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -56,7 +63,7 @@ export const signInWithGoogle = async () => {
         access_type: 'offline',
         prompt: 'consent',
       },
-      skipBrowserRedirect: false, // Ensure redirect happens
+      skipBrowserRedirect: false,
     }
   })
   

@@ -132,8 +132,8 @@ const TripReady: React.FC = () => {
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-white/20">
               <Sparkles size={12} /> Personal Travel Guardian
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold mb-4">TripReady AI</h1>
-            <p className="text-indigo-100 max-w-xl text-lg">Bukan sekadar checklist biasa. AI kami menganalisis kebutuhan spesifikmu, dari obat alergi hingga tips packing untuk bayi. Kami menjagamu dari berangkat sampai pulang.</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold mb-4">Smart Packing AI</h1>
+            <p className="text-indigo-100 max-w-xl text-lg">AI packing list yang cerdas! Analisis cuaca, aktivitas, durasi perjalanan, hingga kebutuhan spesial seperti obat alergi dan perlengkapan bayi. Lengkap dengan reminder otomatis.</p>
           </div>
         </div>
 
@@ -372,7 +372,7 @@ const TripReady: React.FC = () => {
             className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-indigo-500/30 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-            {loading ? 'AI Sedang Menganalisis...' : 'Generate TripReady Checklist'}
+            {loading ? 'AI Sedang Menganalisis...' : 'Generate Smart Packing List'}
           </button>
 
         </form>

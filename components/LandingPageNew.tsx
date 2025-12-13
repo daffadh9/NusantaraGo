@@ -10,9 +10,10 @@ import LogoUnified from './LogoUnified';
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  onAffiliate?: () => void;
 }
 
-const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted }) => {
+const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted, onAffiliate }) => {
   const [isDark, setIsDark] = useState(true); // Default dark mode
   const [scrollY, setScrollY] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -1037,7 +1038,7 @@ const LandingPageNew: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                   </li>
                 ))}
               </ul>
-              <button onClick={onAffiliate} className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
+              <button onClick={onAffiliate || onGetStarted} className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold shadow-lg hover:scale-105 transition-all">
                 Daftar Affiliate Gratis
               </button>
             </div>

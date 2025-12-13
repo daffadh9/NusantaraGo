@@ -104,3 +104,5 @@ supabase/.temp
 **/deploy*.txt
 **/*secret*.txt
 **/*credential*.txt
+
+.vercel

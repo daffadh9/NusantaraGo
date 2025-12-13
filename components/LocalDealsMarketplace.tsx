@@ -55,6 +55,46 @@ const MOCK_DEALS: Deal[] = [
     location: 'Kintamani, Bali', rating: 4.6, soldCount: 342, expiresIn: '10 hari',
     isFlashSale: false, description: 'Kopi Luwak asli dari Kintamani',
     terms: ['100% Arabica', 'Bisa dikirim']
+  },
+  {
+    id: '5', title: 'Sunrise Jeep Tour Bromo', business: 'Bromo Adventure',
+    businessType: 'tour', originalPrice: 650000, discountPrice: 399000, discount: 39,
+    image: 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=600',
+    location: 'Probolinggo, Jawa Timur', rating: 4.9, soldCount: 456, expiresIn: '3 hari',
+    isFlashSale: true, description: 'Sunrise tour + Kawah Bromo + Pasir Berbisik',
+    terms: ['Berangkat jam 2 pagi', 'Termasuk jaket', 'Max 6 orang/jeep']
+  },
+  {
+    id: '6', title: 'Villa 2BR Pool View', business: 'Ubud Green Villas',
+    businessType: 'accommodation', originalPrice: 1800000, discountPrice: 999000, discount: 45,
+    image: 'https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg?auto=compress&cs=tinysrgb&w=600',
+    location: 'Ubud, Bali', rating: 4.8, soldCount: 123, expiresIn: '5 hari',
+    isFlashSale: true, description: 'Private villa dengan infinity pool & rice field view',
+    terms: ['Min. 2 malam', 'Termasuk breakfast', 'Free airport transfer']
+  },
+  {
+    id: '7', title: 'Gudeg Yu Djum Paket Hemat', business: 'Gudeg Yu Djum',
+    businessType: 'restaurant', originalPrice: 75000, discountPrice: 49000, discount: 35,
+    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600',
+    location: 'Yogyakarta', rating: 4.9, soldCount: 892, expiresIn: '4 hari',
+    isFlashSale: false, description: 'Gudeg + Ayam + Telur + Es Teh',
+    terms: ['Dine-in & takeaway', 'Jam 06:00-14:00']
+  },
+  {
+    id: '8', title: 'Rafting Sungai Ayung', business: 'Bali Rafting Adventure',
+    businessType: 'experience', originalPrice: 550000, discountPrice: 299000, discount: 46,
+    image: 'https://images.pexels.com/photos/1530866/pexels-photo-1530866.jpeg?auto=compress&cs=tinysrgb&w=600',
+    location: 'Ubud, Bali', rating: 4.7, soldCount: 345, expiresIn: '6 hari',
+    isFlashSale: true, description: '2 jam rafting + makan siang + shower',
+    terms: ['Min. usia 7 tahun', 'Bawa baju ganti', 'Termasuk asuransi']
+  },
+  {
+    id: '9', title: 'Kerajinan Perak Celuk', business: 'Silver Art Celuk',
+    businessType: 'souvenir', originalPrice: 450000, discountPrice: 275000, discount: 39,
+    image: 'https://images.pexels.com/photos/1191531/pexels-photo-1191531.jpeg?auto=compress&cs=tinysrgb&w=600',
+    location: 'Celuk, Bali', rating: 4.6, soldCount: 167, expiresIn: '8 hari',
+    isFlashSale: false, description: 'Gelang perak custom dengan nama',
+    terms: ['Handmade', 'Proses 2-3 hari', 'Bisa request design']
   }
 ];
 

@@ -70,6 +70,50 @@ const MOCK_BUDDIES: TravelBuddy[] = [
     nextTrip: { destination: 'Flores', date: 'Apr 2025', lookingFor: 'Budget buddy' },
     compatibility: 75, gender: 'male', occupation: 'Freelance Writer',
     photos: ['https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=600']
+  },
+  {
+    id: '5', name: 'Sari Wulandari', age: 26,
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400',
+    location: 'Bali', bio: 'Beach lover & yoga enthusiast 🧘‍♀️ Suka sunset hunting!',
+    interests: ['Beach', 'Yoga', 'Wellness', 'Sunset'],
+    travelStyle: 'relaxed', languages: ['Indonesia', 'English'],
+    verified: true, rating: 4.8, tripsCompleted: 28,
+    nextTrip: { destination: 'Lombok', date: 'Feb 2025', lookingFor: 'Beach buddy' },
+    compatibility: 90, gender: 'female', occupation: 'Yoga Instructor',
+    photos: ['https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=600']
+  },
+  {
+    id: '6', name: 'Andi Wijaya', age: 35,
+    avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=400',
+    location: 'Makassar', bio: 'Photographer & explorer 📸 Suka hunting sunrise!',
+    interests: ['Photography', 'Sunrise', 'Landscape', 'Drone'],
+    travelStyle: 'adventure', languages: ['Indonesia', 'English'],
+    verified: true, rating: 4.9, tripsCompleted: 56,
+    nextTrip: { destination: 'Bromo', date: 'Mar 2025', lookingFor: 'Photo buddy' },
+    compatibility: 85, gender: 'male', occupation: 'Photographer',
+    photos: ['https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=600']
+  },
+  {
+    id: '7', name: 'Maya Putri', age: 24,
+    avatar: 'https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=400',
+    location: 'Semarang', bio: 'Content creator & foodie 🍜 Suka explore warung lokal!',
+    interests: ['Content Creation', 'Food', 'Vlogging', 'Cafe'],
+    travelStyle: 'cultural', languages: ['Indonesia', 'English', 'Korean'],
+    verified: true, rating: 4.7, tripsCompleted: 42,
+    nextTrip: { destination: 'Malang', date: 'Jan 2025', lookingFor: 'Vlog buddy' },
+    compatibility: 78, gender: 'female', occupation: 'Content Creator',
+    photos: ['https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=600']
+  },
+  {
+    id: '8', name: 'Fajar Nugroho', age: 31,
+    avatar: 'https://images.pexels.com/photos/1121796/pexels-photo-1121796.jpeg?auto=compress&cs=tinysrgb&w=400',
+    location: 'Medan', bio: 'Scuba diver & marine life lover 🐠 PADI certified!',
+    interests: ['Diving', 'Marine Life', 'Snorkeling', 'Beach'],
+    travelStyle: 'adventure', languages: ['Indonesia', 'English'],
+    verified: true, rating: 4.8, tripsCompleted: 38,
+    nextTrip: { destination: 'Bunaken', date: 'Apr 2025', lookingFor: 'Dive buddy' },
+    compatibility: 92, gender: 'male', occupation: 'Marine Biologist',
+    photos: ['https://images.pexels.com/photos/1121796/pexels-photo-1121796.jpeg?auto=compress&cs=tinysrgb&w=600']
   }
 ];
 

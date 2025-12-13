@@ -69,7 +69,103 @@ const App: React.FC = () => {
         // Dynamic import to get supabase client
         const { supabase } = await import('./lib/supabaseClient');
         
-        // Check for session immediately
+        // Check URL for OAuth callback (handles both hash fragment AND query params)
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const queryParams = new URLSearchParams(window.location.search);
+        
+        // Try hash first, then query params (Supabase can use either)
+        const accessToken = hashParams.get('access_token') || queryParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token') || queryParams.get('refresh_token');
+        
+        // Detect mobile device
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        console.log('🔍 Checking OAuth callback...');
+        console.log('📍 Current URL:', window.location.href);
+        console.log('📱 Is Mobile:', isMobile);
+        console.log('🔑 Access token found:', !!accessToken);
+        
+        if (accessToken && refreshToken) {
+          console.log('🔄 OAuth callback detected with tokens, setting session...');
+          
+          // Set the session from URL tokens
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+          });
+          
+          if (error) {
+            console.error('❌ Error setting session:', error);
+            setIsAuthLoading(false);
+            // On mobile, try refreshing the session as fallback
+            if (isMobile) {
+              console.log('📱 Mobile detected, attempting session refresh...');
+              await supabase.auth.refreshSession();
+            }
+          } else if (data.session) {
+            console.log('✅ Session set successfully:', data.session.user?.email);
+            
+            // IMMEDIATELY set user state and navigate to dashboard
+            const user = data.session.user;
+            setUser({
+              id: user.id,
+              name: user.user_metadata.full_name || user.email?.split('@')[0] || 'User',
+              email: user.email || '',
+              avatar: user.user_metadata.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
+              phone: '',
+              location: '',
+              memberSince: 'Recently',
+              level: 'Explorer',
+              points: 100,
+              miles: 0,
+              walletBalance: 0,
+              isPremium: false,
+              full_name: user.user_metadata.full_name || user.email?.split('@')[0] || 'User',
+              avatar_url: user.user_metadata.avatar_url
+            });
+            setViewState('dashboard');
+            setIsAuthLoading(false);
+            
+            // Force persist session on mobile
+            if (isMobile) {
+              localStorage.setItem('supabase_session_mobile', JSON.stringify({
+                access_token: data.session.access_token,
+                refresh_token: data.session.refresh_token,
+                timestamp: Date.now()
+              }));
+            }
+          }
+          
+          // Clear the hash/query from URL (remove # fragment)
+          window.history.replaceState(null, '', window.location.pathname);
+        } else if (isMobile) {
+          // Mobile fallback: check for stored session
+          const storedSession = localStorage.getItem('supabase_session_mobile');
+          if (storedSession) {
+            try {
+              const parsed = JSON.parse(storedSession);
+              // Only use if less than 1 hour old
+              if (Date.now() - parsed.timestamp < 3600000) {
+                console.log('📱 Attempting to restore mobile session...');
+                await supabase.auth.setSession({
+                  access_token: parsed.access_token,
+                  refresh_token: parsed.refresh_token
+                });
+              }
+            } catch (e) {
+              console.error('📱 Failed to restore mobile session:', e);
+            }
+          }
+        }
+        
+        // Also check for error in URL (OAuth failure)
+        const errorParam = hashParams.get('error') || queryParams.get('error');
+        if (errorParam) {
+          console.error('❌ OAuth error in URL:', errorParam);
+          const errorDesc = hashParams.get('error_description') || queryParams.get('error_description');
+          console.error('❌ Error description:', errorDesc);
+        }
+        
+        // Now get current session
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session?.user) {
@@ -93,30 +189,6 @@ const App: React.FC = () => {
             avatar_url: user.user_metadata.avatar_url
           });
           setViewState('dashboard');
-        } else {
-          // If no session found via getSession, check if we need to handle hash manually as fallback
-          // (Only if getSession missed it, which is rare but can happen if client initialized late)
-          const hashParams = new URLSearchParams(window.location.hash.substring(1));
-          const accessToken = hashParams.get('access_token');
-          const refreshToken = hashParams.get('refresh_token');
-          
-          if (accessToken && refreshToken) {
-            console.log('🔄 OAuth callback detected manually, attempting to set session...');
-            const { data, error } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken
-            });
-            
-            if (error) {
-              console.error('❌ Error manually setting session:', error);
-            } else if (data.session?.user) {
-              console.log('✅ Session set manually:', data.session.user.email);
-              // State will be updated by onAuthStateChange listener
-            }
-            
-            // Clean URL
-            window.history.replaceState(null, '', window.location.pathname);
-          }
         }
         
         setIsAuthLoading(false);
@@ -514,12 +586,7 @@ const App: React.FC = () => {
       {viewState === 'terms' && <TermsOfService onBack={() => setViewState('landing')} />}
       {viewState === 'cookie' && <CookiePolicy />}
       {viewState === 'gdpr' && <GDPRCompliance />}
-      {viewState === 'affiliate' && (
-        <AffiliateLanding 
-          onJoin={() => setViewState('auth')} 
-          onBack={() => setViewState('landing')} 
-        />
-      )}
+      {viewState === 'affiliate' && <AffiliateLanding onBack={() => setViewState('landing')} />}
 
       {/* Scroll to Top Button */}
       <ScrollToTopButton />

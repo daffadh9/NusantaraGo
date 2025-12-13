@@ -65,8 +65,8 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
             loading="lazy"
           />
         </motion.div>
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        {/* Dark overlay - reduced for better image visibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent group-hover:from-black/80 group-hover:via-black/30 transition-all duration-300" />
       </div>
 
       {/* Top Badges */}
@@ -121,9 +121,9 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
         </motion.button>
       </div>
 
-      {/* Bottom Glassmorphism Overlay */}
+      {/* Bottom Glassmorphism Overlay - Optimized for better image visibility */}
       <div className="absolute bottom-0 left-0 right-0 z-10">
-        <div className="bg-gradient-to-t from-slate-900/95 via-slate-900/80 to-transparent backdrop-blur-lg p-5 pt-20 group-hover:pt-12 transition-all duration-500">
+        <div className="bg-gradient-to-t from-slate-900/90 via-slate-900/60 to-transparent backdrop-blur-sm p-5 pt-10 group-hover:pt-8 group-hover:backdrop-blur-md transition-all duration-500">
           {/* Title */}
           <h3 className="text-xl md:text-2xl font-bold text-white mb-1.5 drop-shadow-lg line-clamp-1">
             {props.title}
@@ -173,7 +173,7 @@ const DestinationCard: React.FC<DestinationCardProps> = (props) => {
             className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-xl font-bold text-sm text-white shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 flex items-center justify-center gap-2"
           >
             <Sparkles size={18} className="animate-pulse" />
-            Saya Kepo!
+            Gas Skuy!
           </motion.button>
         </div>
       </div>

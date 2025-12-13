@@ -25,14 +25,14 @@ interface PhotoSpot {
 const MOCK_SPOTS: PhotoSpot[] = [
   {
     id: '1', name: 'Gerbang Handara', location: 'Bedugul, Bali',
-    image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=800',
     rating: 4.9, likes: 12500, bestTime: '6:00 - 8:00 AM', goldenHour: '06:15',
     difficulty: 'easy', tips: ['Datang pagi untuk avoid crowd', 'Bawa kamera wide angle', 'Tiket masuk 30k'],
     tags: ['iconic', 'temple', 'gate', 'instagram'], coordinates: { lat: -8.2754, lng: 115.1667 },
     contributor: { name: 'Ayu', avatar: 'https://i.pravatar.cc/100?img=1' }, isSaved: false
   },
   {
-    id: '2', name: 'Kelingking Beach Viewpoint', location: 'Nusa Penida, Bali',
+    id: '2', name: 'Kelingking Beach', location: 'Nusa Penida, Bali',
     image: 'https://images.pexels.com/photos/1591373/pexels-photo-1591373.jpeg?auto=compress&cs=tinysrgb&w=800',
     rating: 4.8, likes: 28000, bestTime: '4:00 - 6:00 PM', goldenHour: '17:45',
     difficulty: 'medium', tips: ['Sunset view terbaik', 'Hati-hati tebing curam', 'Bawa air minum'],
@@ -41,7 +41,7 @@ const MOCK_SPOTS: PhotoSpot[] = [
   },
   {
     id: '3', name: 'Tegallalang Rice Terrace', location: 'Ubud, Bali',
-    image: 'https://images.pexels.com/photos/2474689/pexels-photo-2474689.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image: 'https://images.unsplash.com/photo-1531592937781-344ad608fabf?w=800',
     rating: 4.7, likes: 9800, bestTime: '7:00 - 9:00 AM', goldenHour: '07:00',
     difficulty: 'easy', tips: ['Pagi hari untuk cahaya terbaik', 'Pakai sepatu nyaman', 'Swing spot di area bawah'],
     tags: ['rice', 'nature', 'green', 'swing'], coordinates: { lat: -8.4312, lng: 115.2793 },
@@ -54,6 +54,54 @@ const MOCK_SPOTS: PhotoSpot[] = [
     difficulty: 'easy', tips: ['Sunrise reflection di danau', 'Weekday lebih sepi', 'Bawa tripod'],
     tags: ['temple', 'lake', 'reflection', 'sunrise'], coordinates: { lat: -8.2754, lng: 115.1667 },
     contributor: { name: 'Dewi', avatar: 'https://i.pravatar.cc/100?img=4' }, isSaved: false
+  },
+  {
+    id: '5', name: 'Kawah Putih', location: 'Ciwidey, Jawa Barat',
+    image: 'https://images.unsplash.com/photo-1580137189272-c9379f8864fd?w=800',
+    rating: 4.8, likes: 18500, bestTime: '7:00 - 10:00 AM', goldenHour: '07:30',
+    difficulty: 'easy', tips: ['Bawa masker untuk bau belerang', 'Pagi hari berkabut estetik', 'Weekday lebih sepi'],
+    tags: ['crater', 'lake', 'white', 'misty'], coordinates: { lat: -7.1667, lng: 107.4000 },
+    contributor: { name: 'Eka', avatar: 'https://i.pravatar.cc/100?img=5' }, isSaved: false
+  },
+  {
+    id: '6', name: 'Gunung Bromo', location: 'Probolinggo, Jawa Timur',
+    image: 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=800',
+    rating: 4.9, likes: 45000, bestTime: '4:00 - 6:00 AM', goldenHour: '05:00',
+    difficulty: 'medium', tips: ['Sunrise dari Penanjakan', 'Sewa jeep malam', 'Bawa jaket tebal'],
+    tags: ['volcano', 'sunrise', 'iconic', 'adventure'], coordinates: { lat: -7.9425, lng: 112.9530 },
+    contributor: { name: 'Fajar', avatar: 'https://i.pravatar.cc/100?img=6' }, isSaved: true
+  },
+  {
+    id: '7', name: 'Raja Ampat Pianemo', location: 'Raja Ampat, Papua Barat',
+    image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg?auto=compress&cs=tinysrgb&w=800',
+    rating: 5.0, likes: 52000, bestTime: '10:00 AM - 2:00 PM', goldenHour: '16:00',
+    difficulty: 'hard', tips: ['Naik 320 anak tangga', 'Bawa drone untuk aerial', 'Best view dari puncak'],
+    tags: ['island', 'paradise', 'aerial', 'bucket-list'], coordinates: { lat: -0.5500, lng: 130.5167 },
+    contributor: { name: 'Gita', avatar: 'https://i.pravatar.cc/100?img=7' }, isSaved: false
+  },
+  {
+    id: '8', name: 'Candi Borobudur', location: 'Magelang, Jawa Tengah',
+    image: 'https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=800',
+    rating: 4.9, likes: 38000, bestTime: '5:00 - 7:00 AM', goldenHour: '05:30',
+    difficulty: 'easy', tips: ['Sunrise tour wajib', 'Bawa senter', 'Masuk dari pintu belakang'],
+    tags: ['temple', 'heritage', 'sunrise', 'unesco'], coordinates: { lat: -7.6079, lng: 110.2038 },
+    contributor: { name: 'Hadi', avatar: 'https://i.pravatar.cc/100?img=8' }, isSaved: false
+  },
+  {
+    id: '9', name: 'Danau Toba', location: 'Sumatera Utara',
+    image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=800',
+    rating: 4.7, likes: 22000, bestTime: '6:00 - 9:00 AM', goldenHour: '06:30',
+    difficulty: 'easy', tips: ['View dari Bukit Holbung', 'Pulau Samosir wajib', 'Golden hour epik'],
+    tags: ['lake', 'volcano', 'nature', 'peaceful'], coordinates: { lat: 2.6167, lng: 98.8500 },
+    contributor: { name: 'Indah', avatar: 'https://i.pravatar.cc/100?img=9' }, isSaved: false
+  },
+  {
+    id: '10', name: 'Pulau Padar', location: 'Labuan Bajo, NTT',
+    image: 'https://images.pexels.com/photos/1320686/pexels-photo-1320686.jpeg?auto=compress&cs=tinysrgb&w=800',
+    rating: 4.9, likes: 35000, bestTime: '5:00 - 7:00 AM', goldenHour: '05:45',
+    difficulty: 'medium', tips: ['Trekking 30 menit', 'Bawa air banyak', 'Sunrise epic dari puncak'],
+    tags: ['island', 'trekking', 'sunrise', 'komodo'], coordinates: { lat: -8.6500, lng: 119.5833 },
+    contributor: { name: 'Jaka', avatar: 'https://i.pravatar.cc/100?img=10' }, isSaved: true
   }
 ];
 

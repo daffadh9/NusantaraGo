@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   MapPin, Share2, Users, Shield, Phone, AlertTriangle,
   Navigation, Clock, Battery, Signal, Eye, EyeOff,
-  UserPlus, Copy, Check, Bell, Loader2, Compass
+  UserPlus, Copy, Check, Bell, Loader2, Compass, MessageCircle,
+  PhoneCall, Map, Link2, Power, PlayCircle, StopCircle
 } from 'lucide-react';
 
 interface TripShare {
@@ -37,6 +38,18 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
     { id: '1', name: 'Mama', phone: '+62812345678', relation: 'Ibu' },
     { id: '2', name: 'Ayah', phone: '+62812345679', relation: 'Ayah' }
   ]);
+  
+  // GPS Tracking States
+  const [gpsEnabled, setGpsEnabled] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState<GeolocationPosition | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [trackingAccuracy, setTrackingAccuracy] = useState<number | null>(null);
+  const watchIdRef = useRef<number | null>(null);
+  
+  // Communication States
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<EmergencyContact | null>(null);
+  const [newContact, setNewContact] = useState({ name: '', phone: '', relation: '' });
 
   const [tripForm, setTripForm] = useState({
     tripName: '',
@@ -45,13 +58,61 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
     endDate: ''
   });
 
+  // Start GPS tracking
+  useEffect(() => {
+    if (isSharing && gpsEnabled) {
+      if ('geolocation' in navigator) {
+        // Request high-accuracy GPS tracking
+        watchIdRef.current = navigator.geolocation.watchPosition(
+          (position) => {
+            setCurrentPosition(position);
+            setTrackingAccuracy(position.coords.accuracy);
+            setLocationError(null);
+            
+            // Update trip location
+            if (activeTrip) {
+              // Reverse geocode to get address (mock for now)
+              setActiveTrip({
+                ...activeTrip,
+                currentLocation: {
+                  lat: position.coords.latitude,
+                  lng: position.coords.longitude,
+                  address: `${position.coords.latitude.toFixed(4)}, ${position.coords.longitude.toFixed(4)}`
+                },
+                lastUpdate: new Date().toLocaleTimeString(),
+                batteryLevel: Math.floor(Math.random() * 20) + 75 // Mock battery
+              });
+            }
+          },
+          (error) => {
+            setLocationError(error.message);
+            setGpsEnabled(false);
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      } else {
+        setLocationError('GPS tidak tersedia di browser ini');
+      }
+    }
+    
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
+  }, [isSharing, gpsEnabled]);
+  
   const startSharing = () => {
     const newTrip: TripShare = {
       id: Date.now().toString(),
       ...tripForm,
       shareCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
       isLive: true,
-      currentLocation: { lat: -6.2088, lng: 106.8456, address: 'Jakarta, Indonesia' },
+      currentLocation: { lat: -6.2088, lng: 106.8456, address: 'Menunggu GPS...' },
       lastUpdate: new Date().toLocaleTimeString(),
       viewers: [],
       sosEnabled: true,
@@ -59,6 +120,7 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
     };
     setActiveTrip(newTrip);
     setIsSharing(true);
+    setGpsEnabled(true);
   };
 
   const copyShareCode = () => {
@@ -72,6 +134,20 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
   const [sosCountdown, setSosCountdown] = useState(5);
   const [sosTriggered, setSosTriggered] = useState(false);
 
+  const sendSOSMessage = () => {
+    if (!currentPosition || !activeTrip) return;
+    
+    const location = `https://www.google.com/maps?q=${currentPosition.coords.latitude},${currentPosition.coords.longitude}`;
+    const message = `🆘 DARURAT! ${activeTrip.tripName}. Lokasi saya: ${location}. Mohon bantuan segera!`;
+    
+    // Send to all emergency contacts
+    emergencyContacts.forEach(contact => {
+      // SMS (will open default SMS app)
+      const smsUrl = `sms:${contact.phone}?body=${encodeURIComponent(message)}`;
+      window.open(smsUrl, '_blank');
+    });
+  };
+  
   const triggerSOS = () => {
     setShowSOS(true);
     setSosCountdown(5);
@@ -82,7 +158,7 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
         if (prev <= 1) {
           clearInterval(interval);
           setSosTriggered(true);
-          // In real app: Send SMS/notification to emergency contacts
+          sendSOSMessage();
           return 0;
         }
         return prev - 1;
@@ -94,6 +170,34 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
     setShowSOS(false);
     setSosCountdown(5);
     setSosTriggered(false);
+  };
+  
+  const callEmergencyContact = (contact: EmergencyContact) => {
+    window.location.href = `tel:${contact.phone}`;
+  };
+  
+  const sendMessageToContact = (contact: EmergencyContact) => {
+    if (!currentPosition || !activeTrip) return;
+    
+    const location = `https://www.google.com/maps?q=${currentPosition.coords.latitude},${currentPosition.coords.longitude}`;
+    const message = `Halo ${contact.name}, saya sedang di ${activeTrip.tripName}. Lokasi: ${location}`;
+    const smsUrl = `sms:${contact.phone}?body=${encodeURIComponent(message)}`;
+    window.open(smsUrl, '_blank');
+  };
+  
+  const addEmergencyContact = () => {
+    if (newContact.name && newContact.phone) {
+      setEmergencyContacts([...emergencyContacts, {
+        id: Date.now().toString(),
+        ...newContact
+      }]);
+      setNewContact({ name: '', phone: '', relation: '' });
+      setShowContactModal(false);
+    }
+  };
+  
+  const removeContact = (id: string) => {
+    setEmergencyContacts(emergencyContacts.filter(c => c.id !== id));
   };
 
   return (
@@ -283,6 +387,54 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
 
       {activeTab === 'contacts' && (
         <div className="space-y-4">
+          {/* Add Contact Modal */}
+          {showContactModal && (
+            <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+              <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 max-w-md w-full">
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Tambah Kontak Darurat</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nama</label>
+                    <input type="text" placeholder="Nama lengkap"
+                      value={newContact.name}
+                      onChange={e => setNewContact({...newContact, name: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Nomor HP</label>
+                    <input type="tel" placeholder="+628123456789"
+                      value={newContact.phone}
+                      onChange={e => setNewContact({...newContact, phone: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Hubungan</label>
+                    <select value={newContact.relation}
+                      onChange={e => setNewContact({...newContact, relation: e.target.value})}
+                      className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl border-0 focus:ring-2 focus:ring-blue-500">
+                      <option value="">Pilih hubungan</option>
+                      <option value="Orangtua">Orangtua</option>
+                      <option value="Saudara">Saudara</option>
+                      <option value="Pasangan">Pasangan</option>
+                      <option value="Teman">Teman</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button onClick={() => setShowContactModal(false)}
+                    className="flex-1 py-3 bg-slate-100 dark:bg-slate-700 rounded-xl font-semibold text-slate-700 dark:text-slate-300">
+                    Batal
+                  </button>
+                  <button onClick={addEmergencyContact}
+                    className="flex-1 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold">
+                    Simpan
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-4">
             <h3 className="font-bold text-slate-900 dark:text-white mb-4">Kontak Darurat</h3>
             <div className="space-y-3">
@@ -295,10 +447,21 @@ const LiveTripSharing: React.FC<{ userId: string }> = ({ userId }) => {
                     <p className="font-semibold text-slate-900 dark:text-white">{contact.name}</p>
                     <p className="text-sm text-slate-500">{contact.phone} • {contact.relation}</p>
                   </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => callEmergencyContact(contact)}
+                      className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors">
+                      <PhoneCall size={16} className="text-green-600 dark:text-green-400" />
+                    </button>
+                    <button onClick={() => sendMessageToContact(contact)}
+                      className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                      <MessageCircle size={16} className="text-blue-600 dark:text-blue-400" />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
-            <button className="w-full mt-4 py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 font-semibold flex items-center justify-center gap-2">
+            <button onClick={() => setShowContactModal(true)}
+              className="w-full mt-4 py-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-slate-500 font-semibold flex items-center justify-center gap-2 hover:border-blue-400 hover:text-blue-500 transition-colors">
               <UserPlus size={18} /> Tambah Kontak
             </button>
           </div>

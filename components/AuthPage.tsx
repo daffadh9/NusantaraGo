@@ -1,5 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Curated Indonesian destination images with names
+const AUTH_DESTINATIONS = [
+  { name: 'Candi Borobudur', location: 'Jawa Tengah', image: 'https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { name: 'Raja Ampat', location: 'Papua Barat', image: 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { name: 'Gunung Bromo', location: 'Jawa Timur', image: 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { name: 'Sawah Tegallalang', location: 'Bali', image: 'https://images.unsplash.com/photo-1531592937781-344ad608fabf?w=1200' },
+  { name: 'Danau Toba', location: 'Sumatera Utara', image: 'https://images.pexels.com/photos/2166559/pexels-photo-2166559.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+  { name: 'Pulau Komodo', location: 'NTT', image: 'https://images.pexels.com/photos/1320686/pexels-photo-1320686.jpeg?auto=compress&cs=tinysrgb&w=1200' },
+];
 
 interface AuthPageProps {
   onLogin: (user: { name: string; email: string }) => void;
@@ -8,6 +19,17 @@ interface AuthPageProps {
 const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Auto-rotate destination images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % AUTH_DESTINATIONS.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentDestination = AUTH_DESTINATIONS[currentImageIndex];
   
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,12 +51,19 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
         {/* Left Side: Visual (Hidden on Mobile) */}
         <div className={`hidden md:flex w-1/2 relative overflow-hidden transition-all duration-700 bg-emerald-900 text-white p-12 flex-col justify-between ${!isLogin ? 'order-2' : 'order-1'}`}>
           <div className="absolute inset-0 z-0">
-             <img 
-               src="https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?q=80&w=2070&auto=format&fit=crop" 
-               alt="Bali Landscape" 
-               className="w-full h-full object-cover opacity-40 mix-blend-overlay"
-             />
-             <div className="absolute inset-0 bg-gradient-to-t from-emerald-900 to-transparent"></div>
+            <AnimatePresence mode="wait">
+              <motion.img 
+                key={currentImageIndex}
+                src={currentDestination.image}
+                alt={currentDestination.name}
+                className="w-full h-full object-cover"
+                initial={{ opacity: 0, scale: 1.1 }}
+                animate={{ opacity: 0.5, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+              />
+            </AnimatePresence>
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900 via-emerald-900/50 to-transparent"></div>
           </div>
           
           <div className="relative z-10">
@@ -42,14 +71,28 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
             <p className="text-emerald-200">Siapkan koper, AI kami siap membantu rencana liburanmu.</p>
           </div>
 
+          {/* Current Destination Info */}
           <div className="relative z-10 space-y-4">
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/10">
-              <div className="bg-emerald-500 p-2 rounded-full"><Check size={16} /></div>
-              <span className="text-sm font-medium">Itinerary otomatis dalam detik</span>
-            </div>
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/10">
-              <div className="bg-emerald-500 p-2 rounded-full"><Check size={16} /></div>
-              <span className="text-sm font-medium">Rekomendasi Hidden Gems</span>
+            <motion.div 
+              key={currentImageIndex}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/10"
+            >
+              <p className="text-xs text-emerald-300 uppercase tracking-wider mb-1">Destinasi Impian</p>
+              <p className="text-xl font-bold">{currentDestination.name}</p>
+              <p className="text-sm text-emerald-200">{currentDestination.location}</p>
+            </motion.div>
+            
+            {/* Image Indicators */}
+            <div className="flex gap-2 justify-center">
+              {AUTH_DESTINATIONS.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentImageIndex(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${idx === currentImageIndex ? 'bg-white w-6' : 'bg-white/40'}`}
+                />
+              ))}
             </div>
           </div>
         </div>

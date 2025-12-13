@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, MapPin, Mail, Phone, Calendar, Award, Edit3, Save, X, Loader, LogOut, User as UserIcon, Settings, Bell, Globe, Shield, Trash2, Heart, Share2, QrCode, Link2, Copy, Check } from 'lucide-react';
 import { getUserProfile, updateUserProfile, uploadProfilePicture, getUserPreferences, updateUserPreferences, UserProfile as ProfileData } from '../services/profileService';
+import { getAccurateDestinationImage } from '../data/destinationImageMap';
 import { signOut } from '../services/authService';
 
 interface UserProfileNewProps {
@@ -30,11 +31,11 @@ const UserProfileNew: React.FC<UserProfileNewProps> = ({ onLogout, onBack, onPro
   const isMounted = useRef(true);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
-  // Favorites state
+  // Favorites state - using curated images
   const [favorites, setFavorites] = useState([
-    { id: 1, name: 'Raja Ampat', location: 'Papua Barat', image: 'https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?w=300' },
-    { id: 2, name: 'Borobudur', location: 'Jawa Tengah', image: 'https://images.unsplash.com/photo-1596402187264-eb63e0856996?w=300' },
-    { id: 3, name: 'Bali', location: 'Bali', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=300' },
+    { id: 1, name: 'Raja Ampat', location: 'Papua Barat', image: getAccurateDestinationImage('Raja Ampat', 'Pantai') },
+    { id: 2, name: 'Candi Borobudur', location: 'Jawa Tengah', image: getAccurateDestinationImage('Candi Borobudur', 'Budaya') },
+    { id: 3, name: 'Ubud', location: 'Bali', image: getAccurateDestinationImage('Ubud', 'Budaya') },
   ]);
 
   // Share modal state
@@ -409,20 +410,40 @@ const UserProfileNew: React.FC<UserProfileNewProps> = ({ onLogout, onBack, onPro
             onChange={handleBannerUpload}
           />
           
-          {/* Banner Upload Button - Always visible with high z-index */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              bannerInputRef.current?.click();
-            }}
-            disabled={isSaving}
-            className="absolute bottom-4 right-4 z-20 flex items-center gap-2 px-4 py-2 bg-black/60 hover:bg-black/80 text-white rounded-xl text-sm font-semibold cursor-pointer transition-all backdrop-blur-sm disabled:opacity-50 shadow-lg"
-          >
-            <Camera size={16} />
-            {isSaving ? 'Mengunggah...' : 'Ubah Spanduk'}
-          </button>
+          {/* Banner Buttons - Upload & Delete */}
+          <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                bannerInputRef.current?.click();
+              }}
+              disabled={isSaving}
+              className="flex items-center gap-2 px-4 py-2 bg-black/60 hover:bg-black/80 text-white rounded-xl text-sm font-semibold cursor-pointer transition-all backdrop-blur-sm disabled:opacity-50 shadow-lg"
+            >
+              <Camera size={16} />
+              {isSaving ? 'Mengunggah...' : 'Ubah Spanduk'}
+            </button>
+            {bannerUrl && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (confirm('Hapus banner ini?')) {
+                    setBannerUrl(null);
+                    setSuccessMessage('✅ Banner berhasil dihapus');
+                    setTimeout(() => setSuccessMessage(null), 2000);
+                  }
+                }}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-3 py-2 bg-red-500/80 hover:bg-red-600 text-white rounded-xl text-sm font-semibold cursor-pointer transition-all backdrop-blur-sm disabled:opacity-50 shadow-lg"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Profile Info */}
@@ -437,16 +458,43 @@ const UserProfileNew: React.FC<UserProfileNewProps> = ({ onLogout, onBack, onPro
                   className="w-full h-full object-cover"
                 />
               </div>
-              <label className="absolute bottom-2 right-2 p-2 bg-white dark:bg-slate-800 rounded-full shadow-md text-slate-600 dark:text-slate-300 hover:text-emerald-600 cursor-pointer transition-colors">
-                <Camera size={16} />
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                  disabled={isSaving}
-                />
-              </label>
+              <div className="absolute bottom-2 right-2 flex items-center gap-1">
+                <label className="p-2 bg-white dark:bg-slate-800 rounded-full shadow-md text-slate-600 dark:text-slate-300 hover:text-emerald-600 cursor-pointer transition-colors">
+                  <Camera size={16} />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    disabled={isSaving}
+                  />
+                </label>
+                {profile.avatar_url && (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (confirm('Hapus foto profil?')) {
+                        try {
+                          setIsSaving(true);
+                          await updateUserProfile({ avatar_url: null });
+                          setProfile({ ...profile, avatar_url: null });
+                          setSuccessMessage('✅ Foto profil dihapus');
+                          setTimeout(() => setSuccessMessage(null), 2000);
+                          onProfileUpdate?.();
+                        } catch (err) {
+                          setError('Gagal menghapus foto');
+                        } finally {
+                          setIsSaving(false);
+                        }
+                      }
+                    }}
+                    disabled={isSaving}
+                    className="p-2 bg-red-500 rounded-full shadow-md text-white hover:bg-red-600 cursor-pointer transition-colors disabled:opacity-50"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Name & Level */}

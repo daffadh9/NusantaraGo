@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { User, TripPlan, UserInput, DashboardView } from '../types';
 import { Home, PlusCircle, Compass, LogOut, Bell, Menu, X, Wallet, Calendar, User as UserIcon, CheckSquare, Cloud, Flame, Gem, DollarSign, Users, Moon, Sun, Bot, MessageSquare, Map, BookOpen, Gift, TrendingUp, Filter, ChevronRight, Wrench, Gamepad2, Settings as SettingsIcon, Search, Star, MapPin, Image as ImageIcon, Sparkles } from 'lucide-react';
 import TripPlanner from './TripPlanner';
@@ -8,16 +8,12 @@ import UserProfile from './UserProfile';
 import UserProfileNew from './UserProfileNew';
 import TripReady from './TripReady';
 import Community from './Community';
-import SocialFeed from './SocialFeed';
-import Communities from './Communities';
 import MonetizationHub from './MonetizationHub';
 import VisualRouteMap from './VisualRouteMap';
 import TravelerLibrary from './TravelerLibrary';
 import PanduCommandCenter from './PanduCommandCenter';
 import NusantaraLingo from './NusantaraLingo';
 import LiveActivityPopup from './LiveActivityPopup';
-import AIToolsHub from './AIToolsHub';
-import PlayZoneHub from './games/PlayZoneHub';
 import Settings from './Settings';
 import LogoUnified from './LogoUnified';
 import WeatherTimeWidget from './WeatherTimeWidget';
@@ -28,27 +24,31 @@ import BottomNavigation from './BottomNavigation';
 import TripLibrary from './TripLibrary';
 import { saveTrip as saveSupabaseTrip, SavedTrip as SupabaseSavedTrip } from '../services/tripService';
 
-// New Features
-import TravelBuddyMatcher from './TravelBuddyMatcherV2';
-import LiveTripSharing from './LiveTripSharing';
-import SmartTicketScanner from './SmartTicketScanner';
-import InstaSpotFinder from './InstaSpotFinder';
-import IbadahFriendlyPlanner from './IbadahFriendlyPlanner';
-import CarbonFootprintTracker from './CarbonFootprintTracker';
-import LocalDealsMarketplace from './LocalDealsMarketplace';
-import IslandHopperMode from './IslandHopperMode';
-import TravelQuestSystem from './TravelQuestSystem';
-import TripMovieMaker from './TripMovieMaker';
-import ARHeritageTour from './ARHeritageTour';
-import TravelNowPayLater from './TravelNowPayLater';
-import AIVoiceAssistant from './AIVoiceAssistant';
-import Marketplace from './Marketplace';
-
-// Premium Features (Dec 2024)
-import SmartPriceAlert from './SmartPriceAlert';
-import GroupTripPlanner from './GroupTripPlanner';
-import OfflineTravelCompanion from './OfflineTravelCompanion';
-import CreatorDashboard from './CreatorDashboard';
+// Lazy loaded features for better performance
+const TravelBuddyMatcher = lazy(() => import('./TravelBuddyMatcherV2'));
+const LiveTripSharing = lazy(() => import('./LiveTripSharing'));
+const SmartTicketScanner = lazy(() => import('./SmartTicketScanner'));
+const InstaSpotFinder = lazy(() => import('./InstaSpotFinder'));
+const IbadahFriendlyPlanner = lazy(() => import('./IbadahFriendlyPlanner'));
+const CarbonFootprintTracker = lazy(() => import('./CarbonFootprintTracker'));
+const LocalDealsMarketplace = lazy(() => import('./LocalDealsMarketplace'));
+const IslandHopperMode = lazy(() => import('./IslandHopperMode'));
+const TravelQuestSystem = lazy(() => import('./TravelQuestSystem'));
+const TripMovieMaker = lazy(() => import('./TripMovieMaker'));
+const ARHeritageTour = lazy(() => import('./ARHeritageTour'));
+const TravelNowPayLater = lazy(() => import('./TravelNowPayLater'));
+const AIVoiceAssistant = lazy(() => import('./AIVoiceAssistant'));
+const SmartPriceAlert = lazy(() => import('./SmartPriceAlert'));
+const GroupTripPlanner = lazy(() => import('./GroupTripPlanner'));
+const OfflineTravelCompanion = lazy(() => import('./OfflineTravelCompanion'));
+const CreatorDashboard = lazy(() => import('./CreatorDashboard'));
+const Marketplace = lazy(() => import('./Marketplace'));
+const PlayZoneHub = lazy(() => import('./games/PlayZoneHub'));
+const AIToolsHub = lazy(() => import('./AIToolsHub'));
+const SocialFeed = lazy(() => import('./SocialFeed'));
+const Communities = lazy(() => import('./Communities'));
+const NusaMistis = lazy(() => import('./NusaMistis'));
+const NusaVerse = lazy(() => import('./NusaVerse'));
 
 // AI-Powered Destination Cards & Enhanced UI
 import DestinationCard from './DestinationCard';
@@ -60,6 +60,8 @@ import { AI_RECOMMENDED_DESTINATIONS } from '../data/aiDestinationData';
 import { DESTINATIONS_BY_CATEGORY, ALL_DESTINATIONS } from '../data/expandedDestinations';
 import { cn } from '../lib/utils';
 import { useSmoothScroll } from '../hooks/useSmoothScroll';
+import AnimatedDestinationBackground from './AnimatedDestinationBackground';
+import DestinationDetailModal from './DestinationDetailModal';
 
 // Local SavedTrip type for compatibility
 interface SavedTrip {
@@ -206,9 +208,12 @@ const Dashboard: React.FC<DashboardProps> = ({
       label: 'DISCOVER',
       items: [
         { id: 'play_zone', label: 'PlayZone', icon: <Gamepad2 size={20} /> },
+        { id: 'marketplace', label: 'Marketplace', icon: <Gift size={20} /> },
         { id: 'social_feed', label: 'Social Feed', icon: <MessageSquare size={20} /> },
         { id: 'communities', label: 'Komunitas', icon: <Users size={20} /> },
         { id: 'insta_spot', label: 'Insta-Spot', icon: <ImageIcon size={20} /> },
+        { id: 'nusa_mistis', label: 'Nusa Mistis', icon: <Moon size={20} /> },
+        { id: 'nusa_verse', label: 'Nusa Verse', icon: <Compass size={20} /> },
       ]
     },
     {
@@ -226,7 +231,6 @@ const Dashboard: React.FC<DashboardProps> = ({
         { id: 'monetization', label: 'Cuan & Rewards', icon: <Gift size={20} /> },
         { id: 'local_deals', label: 'Local Deals', icon: <DollarSign size={20} /> },
         { id: 'quests', label: 'Travel Quest', icon: <Star size={20} /> },
-        { id: 'marketplace', label: 'Marketplace', icon: <DollarSign size={20} /> },
         { id: 'settings', label: 'Pengaturan', icon: <SettingsIcon size={20} /> },
       ]
     }
@@ -479,26 +483,23 @@ const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          {/* Vertical Filters (Right Side) */}
+          {/* Horizontal Filter Bar (Center Bottom) - Non-blocking */}
           {activeView === 'home' && (
-             <div className={`fixed right-6 top-32 z-20 flex flex-col gap-2 transition-transform duration-300 ${showRightFilters ? 'translate-x-0' : 'translate-x-full'}`}>
-                <div className="bg-white dark:bg-dark-card p-2 rounded-2xl shadow-xl border border-slate-200 dark:border-dark-border flex flex-col gap-1 w-14 hover:w-48 transition-all duration-300 group overflow-hidden">
-                    <button onClick={() => setShowRightFilters(!showRightFilters)} className="self-center p-2 text-slate-400">
-                        <Filter size={20} />
-                    </button>
-                    <div className="h-[1px] bg-slate-100 dark:bg-slate-800 my-1 mx-2"></div>
+             <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-20">
+                <div className="bg-white/95 dark:bg-dark-card/95 backdrop-blur-md px-2 py-1.5 rounded-full shadow-xl border border-slate-200 dark:border-dark-border flex items-center gap-1">
                     {verticalFilters.map(filter => (
                         <button
                           key={filter.id}
                           onClick={() => setActiveFilter(activeFilter === filter.id ? null : filter.id)}
-                          className={`flex items-center gap-3 p-2 rounded-xl transition-colors whitespace-nowrap ${
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all text-xs font-medium whitespace-nowrap ${
                              activeFilter === filter.id 
-                             ? 'bg-slate-100 dark:bg-slate-800' 
-                             : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                             ? 'bg-emerald-500 text-white shadow-md' 
+                             : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
                           }`}
+                          title={filter.label}
                         >
-                            <div className={`${filter.color}`}>{filter.icon}</div>
-                            <span className="text-sm font-bold text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200 delay-100">{filter.label}</span>
+                            <div className={activeFilter === filter.id ? 'text-white' : filter.color}>{filter.icon}</div>
+                            <span className="hidden sm:inline">{filter.label}</span>
                         </button>
                     ))}
                 </div>
@@ -515,7 +516,14 @@ const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Views */}
           {activeView === 'home' && (
-             <div className="space-y-8">
+             <div className="space-y-8 relative">
+               {/* Animated Destination Background */}
+               <AnimatedDestinationBackground 
+                 interval={8000} 
+                 opacity={0.12} 
+                 showInfo={false}
+               />
+               
                {/* Contextual Ambient Hero with AI Search */}
                <ContextualHero 
                  userName={user.name || user.full_name || 'Traveler'}
@@ -751,37 +759,39 @@ const Dashboard: React.FC<DashboardProps> = ({
             />
           </div>
           {activeView === 'trip_ready' && <TripReady />}
-          {activeView === 'ai_tools' && <AIToolsHub />} 
           {activeView === 'monetization' && <MonetizationHub />}
           {activeView === 'community' && <Community />}
-          {activeView === 'social_feed' && <SocialFeed userId={user.id} userAvatar={user.avatar_url} userName={user.full_name} />}
-          {activeView === 'communities' && <Communities userId={user.id} userAvatar={user.avatar_url} userName={user.full_name} />}
           {activeView === 'route_map' && <VisualRouteMap />}
           {activeView === 'library' && <TravelerLibrary />}
-          {activeView === 'play_zone' && <PlayZoneHub userMiles={userMiles} onUpdateMiles={handleUpdateMiles} />}
           {activeView === 'settings' && <Settings onLogout={onLogout} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}
           
-          {/* New Features */}
-          {activeView === 'travel_buddy' && <TravelBuddyMatcher userId={user.id} />}
-          {activeView === 'live_sharing' && <LiveTripSharing userId={user.id} />}
-          {activeView === 'ticket_scanner' && <SmartTicketScanner userId={user.id} />}
-          {activeView === 'insta_spot' && <InstaSpotFinder userId={user.id} />}
-          {activeView === 'ibadah' && <IbadahFriendlyPlanner userId={user.id} />}
-          {activeView === 'carbon' && <CarbonFootprintTracker userId={user.id} />}
-          {activeView === 'local_deals' && <LocalDealsMarketplace userId={user.id} />}
-          {activeView === 'island_hopper' && <IslandHopperMode userId={user.id} />}
-          {activeView === 'quests' && <TravelQuestSystem userId={user.id} userMiles={userMiles} />}
-          {activeView === 'trip_movie' && <TripMovieMaker userId={user.id} />}
-          {activeView === 'ar_heritage' && <ARHeritageTour userId={user.id} />}
-          {activeView === 'bnpl' && <TravelNowPayLater userId={user.id} />}
-          {activeView === 'voice_ai' && <AIVoiceAssistant userId={user.id} />}
-          {activeView === 'marketplace' && <Marketplace userId={user.id} />}
-          
-          {/* Premium Features (Dec 2024) */}
-          {activeView === 'price_alert' && <SmartPriceAlert />}
-          {activeView === 'group_trip' && <GroupTripPlanner />}
-          {activeView === 'offline_companion' && <OfflineTravelCompanion />}
-          {activeView === 'creator_dashboard' && <CreatorDashboard />}
+          {/* Lazy Loaded Features with Suspense */}
+          <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div></div>}>
+            {activeView === 'ai_tools' && <AIToolsHub />}
+            {activeView === 'social_feed' && <SocialFeed userId={user.id} userAvatar={user.avatar_url} userName={user.full_name} />}
+            {activeView === 'communities' && <Communities userId={user.id} userAvatar={user.avatar_url} userName={user.full_name} />}
+            {activeView === 'play_zone' && <PlayZoneHub userMiles={userMiles} onUpdateMiles={handleUpdateMiles} />}
+            {activeView === 'marketplace' && <Marketplace />}
+            {activeView === 'travel_buddy' && <TravelBuddyMatcher userId={user.id} />}
+            {activeView === 'live_sharing' && <LiveTripSharing userId={user.id} />}
+            {activeView === 'ticket_scanner' && <SmartTicketScanner userId={user.id} />}
+            {activeView === 'insta_spot' && <InstaSpotFinder userId={user.id} />}
+            {activeView === 'ibadah' && <IbadahFriendlyPlanner userId={user.id} />}
+            {activeView === 'carbon' && <CarbonFootprintTracker userId={user.id} />}
+            {activeView === 'local_deals' && <LocalDealsMarketplace userId={user.id} />}
+            {activeView === 'island_hopper' && <IslandHopperMode userId={user.id} />}
+            {activeView === 'quests' && <TravelQuestSystem userId={user.id} userMiles={userMiles} />}
+            {activeView === 'trip_movie' && <TripMovieMaker userId={user.id} />}
+            {activeView === 'ar_heritage' && <ARHeritageTour userId={user.id} />}
+            {activeView === 'bnpl' && <TravelNowPayLater userId={user.id} />}
+            {activeView === 'voice_ai' && <AIVoiceAssistant userId={user.id} />}
+            {activeView === 'price_alert' && <SmartPriceAlert />}
+            {activeView === 'group_trip' && <GroupTripPlanner />}
+            {activeView === 'offline_companion' && <OfflineTravelCompanion />}
+            {activeView === 'creator_dashboard' && <CreatorDashboard />}
+            {activeView === 'nusa_mistis' && <NusaMistis />}
+            {activeView === 'nusa_verse' && <NusaVerse />}
+          </Suspense>
           
           {activeView === 'trip_detail' && displayPlan && (
             <div className="space-y-6">

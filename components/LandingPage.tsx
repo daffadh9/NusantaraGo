@@ -1,12 +1,32 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Compass, Map, Zap, Heart, Star, ChevronRight, Globe, ShieldCheck } from 'lucide-react';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import LogoUnified from './LogoUnified';
+
+const ScrollReveal: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 interface LandingPageProps {
   onGetStarted: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
+  const { scrollYProgress } = useScroll();
+  const heroScale = useTransform(scrollYProgress, [0, 0.15], [1, 0.95]);
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, -150]);
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 overflow-x-hidden">
       {/* Navbar - Hidden on Mobile per Mobile-First Design */}
@@ -30,10 +50,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16 md:pt-32 md:pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        {/* Abstract Background Shapes */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-emerald-400/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-orange-400/10 rounded-full blur-3xl"></div>
+      <motion.section 
+        style={{ scale: heroScale }}
+        className="relative pt-20 pb-16 md:pt-32 md:pb-20 lg:pt-48 lg:pb-32 overflow-hidden"
+      >
+        {/* Animated Background Shapes */}
+        <motion.div 
+          style={{ y: bgY }}
+          className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-emerald-400/10 rounded-full blur-3xl"
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div 
+          className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-orange-400/10 rounded-full blur-3xl"
+          animate={{ scale: [1, 1.15, 1] }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
 
         <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto">
@@ -60,15 +92,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
             </div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Features Grid */}
       <section id="features" className="py-16 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-4">Kenapa NusantaraGo?</h2>
-            <p className="text-slate-500 max-w-2xl mx-auto">Kami mengatasi masalah klasik traveler: kebingungan logistik, takut overbudget, dan FOMO.</p>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Kenapa NusantaraGo?</h2>
+              <p className="text-slate-500 max-w-2xl mx-auto">Kami mengatasi masalah klasik traveler: kebingungan logistik, takut overbudget, dan FOMO.</p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[

@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
-import { DollarSign, TrendingUp, Users, Award, ArrowRight, Zap, Target, PieChart, Briefcase, ChevronRight, CheckCircle, Smartphone, Rocket, Calendar, CreditCard, ShieldCheck } from 'lucide-react';
+import { DollarSign, TrendingUp, Users, Award, ArrowRight, Zap, Target, PieChart, Briefcase, ChevronRight, CheckCircle, Smartphone, Rocket, Calendar, CreditCard, ShieldCheck, ArrowLeft, Copy, Share2, Download, Mail, Instagram, Youtube, MessageCircle } from 'lucide-react';
+import LogoUnified from './LogoUnified';
 
-const AffiliateLanding: React.FC = () => {
+interface AffiliateLandingProps {
+  onBack?: () => void;
+}
+
+const AffiliateLanding: React.FC<AffiliateLandingProps> = ({ onBack }) => {
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [registrationStep, setRegistrationStep] = useState(1);
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '', platform: '' });
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText('https://nusantarago.id/ref/YOUR_CODE');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  
+  const onJoin = () => setShowRegistration(true);
   const [activeTier, setActiveTier] = useState('Starter');
   const [calculatorUsers, setCalculatorUsers] = useState(10);
   const commissionRate = 0.30;
@@ -11,7 +28,140 @@ const AffiliateLanding: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black text-slate-900 dark:text-white font-sans">
       
-      {/* Hero Section */}
+      {/* Back Button & Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={onBack || (() => window.history.back())}
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <LogoUnified size={32} variant="full" />
+          </div>
+          <button 
+            onClick={onJoin}
+            className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-bold text-sm hover:scale-105 transition-all shadow-lg"
+          >
+            Daftar Sekarang
+          </button>
+        </div>
+      </header>
+
+      {/* Registration Modal */}
+      {showRegistration && (
+        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-8 shadow-2xl relative animate-in zoom-in-95 duration-300">
+            <button 
+              onClick={() => setShowRegistration(false)}
+              className="absolute top-4 right-4 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+            >
+              ✕
+            </button>
+            
+            {registrationStep === 1 ? (
+              <>
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 mx-auto bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-full flex items-center justify-center mb-4">
+                    <Rocket className="text-emerald-600 dark:text-emerald-400" size={32} />
+                  </div>
+                  <h3 className="text-2xl font-black mb-2">Daftar Jadi Affiliate</h3>
+                  <p className="text-slate-500 dark:text-slate-400">Gratis! Langsung dapet link affiliate.</p>
+                </div>
+                
+                <div className="space-y-4">
+                  <input 
+                    type="text"
+                    placeholder="Nama Lengkap"
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  <input 
+                    type="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  <input 
+                    type="tel"
+                    placeholder="No. WhatsApp"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  />
+                  <select
+                    value={formData.platform}
+                    onChange={(e) => setFormData({...formData, platform: e.target.value})}
+                    className="w-full px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  >
+                    <option value="">Platform Promosi Utama</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="blog">Blog/Website</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="other">Lainnya</option>
+                  </select>
+                </div>
+                
+                <button 
+                  onClick={() => setRegistrationStep(2)}
+                  disabled={!formData.name || !formData.email}
+                  className="w-full mt-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all"
+                >
+                  Lanjut Daftar →
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="text-center mb-8">
+                  <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mb-4">
+                    <CheckCircle className="text-white" size={40} />
+                  </div>
+                  <h3 className="text-2xl font-black mb-2">Selamat! 🎉</h3>
+                  <p className="text-slate-500 dark:text-slate-400">Kamu resmi jadi NusantaraGo Affiliate!</p>
+                </div>
+                
+                <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-xl mb-6">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">Link Affiliate Kamu:</p>
+                  <div className="flex items-center gap-2">
+                    <code className="flex-1 text-sm font-mono text-emerald-600 dark:text-emerald-400 truncate">
+                      https://nusantarago.id/ref/AFFL{Math.random().toString(36).substring(2,8).toUpperCase()}
+                    </code>
+                    <button 
+                      onClick={handleCopyLink}
+                      className="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
+                    >
+                      {copied ? <CheckCircle size={18} /> : <Copy size={18} />}
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <button className="flex items-center justify-center gap-2 p-3 bg-pink-500 text-white rounded-xl font-bold text-sm hover:bg-pink-600 transition-colors">
+                    <Instagram size={18} /> Share
+                  </button>
+                  <button className="flex items-center justify-center gap-2 p-3 bg-green-500 text-white rounded-xl font-bold text-sm hover:bg-green-600 transition-colors">
+                    <MessageCircle size={18} /> WhatsApp
+                  </button>
+                </div>
+                
+                <button 
+                  onClick={() => setShowRegistration(false)}
+                  className="w-full py-3 border border-slate-200 dark:border-slate-700 rounded-xl font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                >
+                  Tutup & Mulai Promosi
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Hero Section - Add top padding for fixed header */}
       <section className="relative bg-gradient-to-br from-emerald-600 to-teal-700 min-h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl animate-pulse"></div>
